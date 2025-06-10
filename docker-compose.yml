@@ -1,0 +1,144 @@
+version: '3.9'
+
+services:
+
+   # 🛡️ AUTH SERVICE
+   auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+    networks:
+      - cesi-network
+
+  #  API GATEWAY
+   gateway:
+    build: ./gateway
+    container_name: gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    depends_on:
+      - auth-service
+    networks:
+      - cesi-network
+
+   # 👤 USER SERVICE
+   user-service:
+    build: ./services/user-service
+    container_name: user-service
+    environment:
+      - PORT=5002
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_users
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 🧾 ORDER SERVICE
+   order-service:
+    build: ./services/order-service
+    container_name: order-service
+    environment:
+      - PORT=5003
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_orders
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 🍽️ MENU SERVICE
+   menu-service:
+    build: ./services/menu-service
+    container_name: menu-service
+    environment:
+      - PORT=5004
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_menus
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 💳 PAYMENT SERVICE
+   payment-service:
+    build: ./services/payment-service
+    container_name: payment-service
+    environment:
+      - PORT=5005
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_payments
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 🚚 DELIVERY SERVICE
+   delivery-service:
+    build: ./services/delivery-service
+    container_name: delivery-service
+    environment:
+      - PORT=5006
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_deliveries
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 📊 ANALYTICS SERVICE
+   analytics-service:
+    build: ./services/analytics-service
+    container_name: analytics-service
+    environment:
+      - PORT=5007
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_analytics
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 🧩 COMPONENT SERVICE
+   component-service:
+    build: ./services/component-service
+    container_name: component-service
+    environment:
+      - PORT=5008
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_components
+    depends_on:
+      - postgres
+    networks:
+      - cesi-network
+
+   # 🗃️ POSTGRESQL
+   postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cesi_global
+    volumes:
+      - ./docker/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - cesi-network
+
+   # 🌍 NGINX (Reverse Proxy)
+   nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - gateway
+    networks:
+      - cesi-network
+
+networks:
+  cesi-network:
+    driver: bridge
