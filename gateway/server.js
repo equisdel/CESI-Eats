@@ -1,26 +1,28 @@
 // gateway/server.js
-require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const app   = express();
-const port  = process.env.PORT || 8000;
+const app = express();
+app.use(cors());
 
-// Proxy vers chaque service selon les variables d'env
-app.use('/auth',     createProxyMiddleware({ target: process.env.AUTH_URL,     changeOrigin: true }));
-app.use('/users',    createProxyMiddleware({ target: process.env.USER_URL,     changeOrigin: true }));
-app.use('/orders',   createProxyMiddleware({ target: process.env.ORDER_URL,    changeOrigin: true }));
-app.use('/menus',    createProxyMiddleware({ target: process.env.MENU_URL,     changeOrigin: true }));
-app.use('/payments', createProxyMiddleware({ target: process.env.PAYMENT_URL,  changeOrigin: true }));
-app.use('/deliveries',createProxyMiddleware({ target: process.env.DELIVERY_URL, changeOrigin: true }));
-app.use('/analytics',createProxyMiddleware({ target: process.env.ANALYTICS_URL,changeOrigin: true }));
-app.use('/components',createProxyMiddleware({ target: process.env.COMPONENT_URL,changeOrigin: true }));
+// 👉 1) parse le JSON pour cette route
+app.use('/api/orders', bodyParser.json());
 
-app.get('/health', (req, res) => {
-  res.send('Gateway is up and running');
-});
+// 👉 2) proxy
+app.use('/api/orders', createProxyMiddleware({
+  target: 'http://order-service:5003',   // nom du service Docker
+  changeOrigin: true,
+  onProxyReq: (proxyReq, req) => {
+    if (req.body && Object.keys(req.body).length) {
+      const body = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(body));
+      proxyReq.write(body);
+      proxyReq.end();                    // ⚠️ termine le flux
+    }
+  }
+}));
 
-// Server start
-app.listen(port, () => {
-  console.log(`🚀 API Gateway listening on port ${port}`);
-});
+app.listen(8000, () => console.log('🚀 API Gateway listening on port 8000'));
