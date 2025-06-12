@@ -8,24 +8,34 @@ function App() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log('Form submitted!');
+    console.log('Form data:', formData);
+    
     try {
-      await axios.post('http://localhost:8000/api/orders', formData);
+      console.log('Sending request...');
+      const response = await axios.post('http://localhost:8000/api/orders', formData);
+      console.log('Response:', response);
       alert('✅ Data sent successfully');
     } catch (err) {
-      console.error(err);
+      console.log('Error caught:', err);
       alert('❌ Failed to send data.');
+      if (err.response) {
+        console.error('Error response:', err.response.status, err.response.data);
+      } else {
+        console.error(err);
+      }
     }
   };
 
   return (
     <div>
-      <h1>Test Form</h1>
+      <h1>delfina  Form</h1>
       <form onSubmit={handleSubmit}>
         <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
         <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <button type="submit">Send</button>
+        <button type="submit">Submit</button>
       </form>
     </div>
   );

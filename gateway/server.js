@@ -1,28 +1,36 @@
-// gateway/server.js
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 app.use(cors());
 
-// 👉 1) parse le JSON pour cette route
-app.use('/api/orders', bodyParser.json());
+// Logger
+app.use((req, res, next) => {
+  console.log(`[Gateway] ${req.method} ${req.url}`);
+  next();
+});
 
-// 👉 2) proxy
-app.use('/api/orders', createProxyMiddleware({
-  target: 'http://order-service:5003',   // nom du service Docker
-  changeOrigin: true,
-  onProxyReq: (proxyReq, req) => {
-    if (req.body && Object.keys(req.body).length) {
-      const body = JSON.stringify(req.body);
-      proxyReq.setHeader('Content-Type', 'application/json');
-      proxyReq.setHeader('Content-Length', Buffer.byteLength(body));
-      proxyReq.write(body);
-      proxyReq.end();                    // ⚠️ termine le flux
-    }
-  }
-}));
+// Dictionnaire des routes dynamiques
+const serviceProxyMap = {
+  '/api/orders': 'http://order-service:5003',
+  '/api/users': 'http://user-service:5002',
+  '/api/menu': 'http://menu-service:5004',
+  '/api/payments': 'http://payment-service:5005',
+  '/api/delivery': 'http://delivery-service:5006',
+  '/api/analytics': 'http://analytics-service:5007',
+  '/api/components': 'http://component-service:5008',
+};
 
-app.listen(8000, () => console.log('🚀 API Gateway listening on port 8000'));
+// Proxy dynamique
+Object.entries(serviceProxyMap).forEach(([route, target]) => {
+  app.use(route, createProxyMiddleware({
+    target,
+    changeOrigin: true,
+    pathRewrite: (path, req) => path.replace(route, ''), // retire le préfixe
+  }));
+});
+
+app.listen(8000, () => {
+  console.log('🚀 API Gateway listening on port 8000');
+});
