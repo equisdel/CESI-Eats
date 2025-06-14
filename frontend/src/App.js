@@ -31,7 +31,7 @@ function App() {
 
   return (
     <div>
-      <h1>delfina  Form</h1>
+      <h1>ghsjska  Form</h1>
       <form onSubmit={handleSubmit}>
         <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
         <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
