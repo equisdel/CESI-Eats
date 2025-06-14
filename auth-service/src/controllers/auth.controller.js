@@ -49,5 +49,3 @@ exports.login = (req, res) => {
         return res.status(401).json({ message: "invalid login credentials" })
     }
 }
-
-module.exports = { register, login };
