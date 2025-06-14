@@ -3,13 +3,13 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
 const app = express();
-const port = 3000;
+const port = 8000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-const JWT_KEY = "default_key";
+const JWT_KEY = process.env.JWT_KEY || "default_key";
 
 const serviceProxyMap = {
   '/api/orders': 'http://order-service:5003',

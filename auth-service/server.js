@@ -6,14 +6,8 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json())
 
-
+// automatic routing of requests
 require('./src/routes/auth.routes')(app);
-
-
-/*app.get('/', (req, res) => {
-  res.send(`✅ ${process.env.PORT} - ${process.env.SERVICE_NAME || 'Service'} is running`);
-});*/
-
 
 // first thing that happens when the server starts
 app.listen(port, () => {
