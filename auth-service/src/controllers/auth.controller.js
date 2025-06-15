@@ -1,4 +1,4 @@
-//const bcrypt = require('bcrypt');       // hashing password
+const bcrypt = require('bcrypt');       // hashing password
 const jwt = require('jsonwebtoken');    // issuing/veryfying token
 
 const JWT_KEY = process.env.JWT_KEY || "default_key";
@@ -7,7 +7,12 @@ const JWT_TOKEN_LIFETIME = process.env.JWT_TOKEN_LIFETIME || "1h";
 const User = require('../models/user.model');
 
 async function getUser(type,mail) {
-    return await User.findOne( { where: {mail: mail, role: type} })
+    try {
+        let user = await User.findOne( { where: {mail: mail, role: type} })
+        return user
+    } catch (error) {
+        return null
+    }
 }
 
 function isValidToken(token) {
@@ -43,7 +48,7 @@ const register = async (req, res) => {  // Changed to const definition
             const newUser = await User.create({
                 first_name: info.first_name,
                 last_name: info.last_name,
-                mail,
+                mail: mail,
                 password: hashed_pw,
                 phone_number: info.phone_number,
                 birthday_date: info.birthday_date,

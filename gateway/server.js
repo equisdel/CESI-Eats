@@ -1,5 +1,4 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
 const app = express();
@@ -20,33 +19,16 @@ const serviceProxyMap = {
   '/api/analytics': 'http://analytics-service:5007',
   '/api/components': 'http://component-service:5008',
 };
+
 //require('./src/routes/auth.routes')(app);
 
-// all requests go through this endpoint
-app.all('/authenticate', (req, res) => {
+// all requests go through this endpoint: proxy
+app.all('/', (req, res) => {
   // check for token in header
-  let authHeader = req.headers["authorization"]
-
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-
-    let token = authHeader.substring(7, authHeader.length)
-
-    if (isValidToken(token)) {
-      return res.status(200).json({"msg": "Valid token"}); // Token is valid
-    } else {
-      return res.status(401).json({"msg": "Invalid token"});
-    }
-
-  } else {    // no token was given
-    return res.status(401).json({"msg": "Missing token"});
-  }
+  console.log("ok")
 });
 
-function isValidToken(token) {
-  console.log(token)
-  token = jwt.verify(token, JWT_KEY, { algorithms: ["HS256"] });  // returns the decoded payload
-  return token
-}
+
 
 /*
 // Logger
@@ -70,7 +52,6 @@ Object.entries(serviceProxyMap).forEach(([route, target]) => {
 */
 
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log('Gateway listening on port',port);
-  
 });

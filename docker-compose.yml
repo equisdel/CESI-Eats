@@ -7,19 +7,18 @@ services:
     networks:
       - cesi-network
 
-## NGINX is part of gateway
-##  nginx:
-##    image: nginx:latest #Nous allons chercher la dernière version de nginx existante
-##    container_name: nginx #Nous nommons le container
-##    volumes:
-##      - ./gateway/nginx.conf:/nginx.conf #Affectation du fichier de config personnalisé | first part is local : second part is inside the container
-##    ports:
-##      - "8080:8080" # Nous exposerons sur le port 8080
-##    networks:
-##      - cesi-network
-##    depends_on:
-##     - auth-service # means you have to run it before
-##      - gateway
+  nginx:
+    image: nginx:latest #Nous allons chercher la dernière version de nginx existante
+    container_name: nginx #Nous nommons le container
+    volumes:
+      - ./gateway/nginx.conf:/nginx.conf #Affectation du fichier de config personnalisé | first part is local : second part is inside the container
+    ports:
+      - "2307:2307" # Nous exposerons sur le port 8080
+    networks:
+      - cesi-network
+    depends_on:
+     - auth-service # means you have to run it before
+     - gateway
 
 
   # 🛡️ AUTH SERVICE
@@ -30,7 +29,7 @@ services:
       - "5001:5001"
     environment:
       - PORT=5001
-      - ACCESS_JWT_KEY="ILoveBachito"
+      - ACCESS_JWT_KEY="defaultkey"
       - TOKEN_LIFETIME="1h"
     networks:
       - cesi-network
