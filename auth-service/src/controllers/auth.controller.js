@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');       // hashing password
 const jwt = require('jsonwebtoken');    // issuing/veryfying token
 
-const JWT_KEY = process.env.JWT_KEY || "default_key";
+const JWT_ACCESS_KEY = process.env.JWT_ACCESS_KEY || "default_key";
 const JWT_TOKEN_LIFETIME = process.env.JWT_TOKEN_LIFETIME || "1h";
 
 const User = require('../models/user.model');
@@ -15,33 +15,34 @@ async function getUser(type,mail) {
     }
 }
 
-function isValidToken(token) {
-    return jwt.verify(token,JWT_KEY,{algorithms: ["HS256"]})
-}
+const authenticate = async (req, res) => {
 
-const authenticate = async (req, res, next) => {
+    try {
+        console.log("?")
+        let authHeader = req.headers["authorization"]
 
-    let authHeader = req.headers["authorization"]
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-
-        let token = authHeader.substring(7, authHeader.length)
-        if (isValidToken(token)) {
-            return res.status(200).json({"msg": "Valid Token"})
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            let token = authHeader.substring(7, authHeader.length)
+            if (jwt.verify(token,JWT_ACCESS_KEY,{algorithms: ["HS256"]})) {
+                return res.status(200).json({"msg": "Valid Token"})
+            } else {
+                return res.status(401).json({"msg": "Invalid Token"})
+            }
         } else {
-            return res.status(401).json({"msg": "Invalid Token"})
+            return res.status(401).json({"msg": "Missing token"})
         }
 
-    } else {
-        return res.status(401).json({"msg": "Missing token"})
+    } catch (error) {
+        return res.status(401).json({ error: `Failed to authenticate user: ${error}`})
     }
+
 }
 
 const register = async (req, res) => {  // Changed to const definition
     const { type, mail, password, info } = req.body;
     const user = await getUser(type, mail);
     if (user) {
-        res.status(409).json({ error: 'User already exists' });
+        return res.status(409).json({ error: 'User already exists' });
     } else {
         const hashed_pw = bcrypt.hashSync(password, 10);
         try {
@@ -54,22 +55,27 @@ const register = async (req, res) => {  // Changed to const definition
                 birthday_date: info.birthday_date,
                 role: type || 'user',
             });
-            res.status(201).json({ msg: 'User created successfully!', user: newUser });
+            return res.status(201).json({ msg: 'User created successfully!', user: newUser });
         } catch (error) {
             console.error('Error creating user:', error);
-            res.status(500).json({ error: 'Failed to create user' });
+            return res.status(500).json({ error: 'Failed to create user' });
         }
     }
 }
 
 const login = async (req, res) => {  // Changed to const definition
     const { type, mail, password } = req.body;
-    const user = await getUser(type, mail);
-    if (user && bcrypt.compareSync(password, user.password)) {
-        const token = jwt.sign({ mail: user.mail }, JWT_KEY, { expiresIn: JWT_TOKEN_LIFETIME });
-        res.status(200).json({ token });
-    } else {
-        res.status(401).json({ error: 'Invalid credentials' });
+    try {
+        const user = await getUser(type, mail);
+        if (user && bcrypt.compareSync(password, user.password)) {
+            const token = jwt.sign({ mail: user.mail }, JWT_ACCESS_KEY, { expiresIn: JWT_TOKEN_LIFETIME });
+            return res.status(200).json({ token });
+        } else {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        console.error('Error logging user:', error);
+        return res.status(500).json({ error: `Failed to login user: ${error}` });
     }
 }
 
