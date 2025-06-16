@@ -22,7 +22,10 @@ const Menu = sequelize.define('Menu', {
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
-  }
-});
+  }, 
+}, {
+  tableName: 'Menu',
+}
+);
 
 module.exports = Menu;

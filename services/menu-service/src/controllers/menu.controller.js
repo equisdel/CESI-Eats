@@ -2,8 +2,6 @@ const Menu = require('../models/menu.model.js');
 const Item = require('../models/item.model.js');
 const MenuItem = require('../models/menu-item.model.js');
 
-const ItemController = require('./item.controller.js')
-
 // AUXILIAR FUNCTIONS
 
 async function isValidMenu(menu_id, restaurant_id) {
@@ -18,11 +16,13 @@ async function isValidMenu(menu_id, restaurant_id) {
     }
 }
 
-async function isValidItem(item_id, restaurant_id) {
+async function isValidItem(item_id) {
     try {
-        return await Item.findOne({ where: {item_id: item_id, restaurant_id: restaurant_id} })
-    } catch {
-        return null
+        console.log(item_id,"!!!!")
+        return await Item.findOne({ where: {item_id: item_id} })
+    } catch (error) {
+        console.log(error,"_ALDÑLS")
+        return {"msg": error}
     }
 }
 
@@ -41,13 +41,13 @@ async function sumPrice(items,restaurant_id) {
 
 async function addItemToMenu(item_id, menu_id) {
     try {
-        const newMenuItem = await MenuItem.create({
+        return await MenuItem.create({
             menu_id: menu_id,
             item_id: item_id
         })
-        return res.status(200).json({ msg: "Item succesfully added to menu!", menu_item: newMenuItem }) 
     } catch (error) {
-        return res.status(401).json({ error: `Error adding item to menu: ${error}`}) 
+        console.log(error)
+        throw error
     }
 }
 
@@ -61,13 +61,14 @@ const createMenu = async (req, res) => {    // restaurant user or business analy
             const newMenu = await Menu.create({
                 restaurant_id: restaurant_id,
                 menu_name: name,
-                menu_price: price || sumPrice(items,restaurant_id),
+                menu_price: price, // || sumPrice(items,restaurant_id),
                 menu_photo: photo,
                 menu_description: description
             });
             console.log('New menu added: ',newMenu.menu_id) 
             for (const item of items) {
-                const i = await isValidItem(item,restaurant_id)
+                const i = await isValidItem(item)
+                console.log(i)
                 if (i) {    // item exists and belongs to restaurant
                     await addItemToMenu(i.item_id,newMenu.menu_id)
                 } else {
@@ -103,38 +104,43 @@ const deleteMenu = async (req,res) => {
 }
 
 // MENU SEARCH
-
-// for [1]: /menu/:menu_id
-// for [2]: /menu//:restaurant_id
-// for [3]: /menu/
 const findMenus = async (req,res) => {
 
-    const { menu_id, restaurant_id } = req.params
-    const { limit, order, offset } = req.body       // add validators later?
+    const { menu_id, restaurant_id, limit, order, offset, items } = req.query
 
-    if (menu_id) {                  // search only one menu by its id
-        try {
-            return res.status(200).json(await Menu.findOne({ where: { menu_id: menu_id }}))
-        } catch (error) {
-            console.log("Error searching for menu:",error)
-            return res.status(500).json({ error: "Menu Search error: Could not retrieve menu by ID" })
-        }
-    } 
-    
-    else if (restaurant_id) {     // search many menus from a restaurant
-        try {
-            return res.status(200).json(await Menu.findAll({ where: { restaurant_id: restaurant_id}, limit: limit, order: order, offset: offset }))
-        } catch (error) {
-            return res.status(500).json({ error: "Menu Search error: Could not retrieve menus for the specified restaurant" })
-        }
-    }
+    try {
 
-    else {                        // search all menus (use order/limit/offset to browse most popular, best qualified, nearest-by for example)
-        try {
-            return res.status(200).json(await Menu.findAll({ order: order, limit: limit, offset: offset }))
-        } catch (error) {
-            return res.status(500).json({ error: "Menu Search error: Could not retrieve menus" })
+        const where = {};
+        if (menu_id) where.menu_id = menu_id;
+        if (restaurant_id) where.restaurant_id = restaurant_id;
+
+        const menus = await Menu.findAll({
+            where,
+            limit: limit ? parseInt(limit) : 10,
+            order: order ? [['menu_name', order]] : [['menu_name', 'ASC']], // default order
+            offset: offset ? parseInt(offset) : 0
+        });
+        
+        if (items && items===true) {    // adds array of items that compose each menu
+
+            for (const menu of menus) {
+                menu.dataValues.items = []; 
+                const menuItems = await MenuItem.findAll({ where: { menu_id: menu.menu_id } });
+                for (const menuItem of menuItems) {
+                    const item = await Item.findOne({ where: { item_id: menuItem.item_id } });
+                    if (item) {
+                        menu.dataValues.items.push({
+                            item_id: item.item_id,
+                            item_name: item.item_name,
+                            item_price: item.item_price
+                        });
+                    }
+                }
+            }
         }
+        return res.status(200).json(menus);
+    } catch (error) {
+        return res.status(500).json({ error: "Failed to search menus", details: error.message });
     }
 
 }

@@ -9,7 +9,6 @@ const port = process.env.PORT || 5004;
 const Restaurant = require('./src/models/restaurant.model.js');
 const User = require('./src/models/restaurant.model.js');
 
-
 const app = express();
 app.use(express.json())
 app.use('/menu', menuRouter);   // All /menu requests go to menuRouter

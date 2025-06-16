@@ -4,9 +4,9 @@ const Item = require('../models/item.model.js');
 
 // could move: sum of items price and isValid to here (see how to export for the other controller)
 
-async function isValidItem(item_id, restaurant_id) {
+async function isValidItem(item_id) {
     try {
-        return await Item.findOne({ where: {item_id: item_id, restaurant_id: restaurant_id} })
+        return await Item.findOne({ where: {item_id: item_id} })
     } catch {
         return null
     }
@@ -111,5 +111,5 @@ const updateItem = async (req,res) => {
     }
 }
 
-module.exports = { createItem, deleteItem, findItems, updateItem };
+module.exports = { createItem, deleteItem, findItems, updateItem, isValidItem };
 
