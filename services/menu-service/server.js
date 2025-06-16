@@ -1,12 +1,14 @@
 require("dotenv").config({path: "../.env"});
 const express = require('express');
+const menuRouter = require('./routes/menu.routes');
+const itemRouter = require('./routes/item.routes');
 const {sequelize, connectDB} = require("./src/config/db.js")
+const port = process.env.PORT || 5004;
+
 const app = express();
-const port = process.env.PORT || 5000;
-
 app.use(express.json())
-
-require('./src/routes/auth.routes')(app);
+app.use('/menu', menuRouter);   // All /menu requests go to menuRouter
+app.use('/items', itemRouter);  // All /items requests go to itemRouter
 
 async function startServer() {
 
