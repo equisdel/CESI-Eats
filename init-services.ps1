@@ -25,6 +25,7 @@ CMD ["node", "server.js"]
 # Contenu du server.js
 $serverjs = @"
 const express = require('express');
+const jwt = require('jsonwebtoken')
 const app = express();
 const port = process.env.PORT || 5000;
 

@@ -8,6 +8,20 @@ services:
     networks:
       - cesi-network
 
+  nginx:
+    image: nginx:latest #Nous allons chercher la dernière version de nginx existante
+    container_name: nginx #Nous nommons le container
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf #Affectation du fichier de config personnalisé | first part is local : second part is inside the container
+    ports:
+      - "8080:8080" # Nous exposerons sur le port 8080
+    networks:
+      - cesi-network
+    depends_on:
+     - auth-service # means you have to run it before
+     - gateway
+
+
   # 🛡️ AUTH SERVICE
   auth-service:
     build: ./auth-service
@@ -16,6 +30,8 @@ services:
       - "5001:5001"
     environment:
       - PORT=5001
+      - ACCESS_JWT_KEY="defaultkey"
+      - TOKEN_LIFETIME="1h"
     networks:
       - cesi-network
 
@@ -32,6 +48,7 @@ services:
       - auth-service
     environment:
       - PORT=8000
+      - ACCESS_JWT_KEY="access_jwt_key"
     
 
   # 👤 USER SERVICE
@@ -146,18 +163,6 @@ services:
     networks:
       - cesi-network
 
-  # 🌍 NGINX (Reverse Proxy)
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    depends_on:
-      - gateway
-    networks:
-      - cesi-network
 
 networks:
   cesi-network:
