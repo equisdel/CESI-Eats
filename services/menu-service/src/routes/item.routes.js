@@ -1,10 +1,10 @@
 const itemController = require("../controllers/item.controller");
+const express = require('express')
+const router = express.Router()
 
-module.exports = function(app) {
-    // ON ITEM
-    app.get('/item', itemController.getAllMenus);   
-    app.post('/item', itemController.createMenu);    
-    app.get('/item/:id', itemController.getMenuById); 
-    app.put('/item/:id', itemController.updateMenu);  
-    app.delete('/item/:id', itemController.deleteMenu);
-}
+router.post('/', itemController.createItem);       // create a menu: ok -> impacts on menu-item
+router.get('/', itemController.findItems);          // search menu/s: ok -> details go in query
+router.delete('/:id', itemController.deleteItem);  // delete a menu: ok
+router.put('/:id', itemController.updateItem);     // modify a menu:  -> impacts on menu-item
+
+module.exports = router
