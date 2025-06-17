@@ -1,0 +1,10 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "your_password",
+    "database": "delivery_service_db",
+    "host": "postgres",
+    "dialect": "postgres",
+    "port": 5432
+  }
+}
