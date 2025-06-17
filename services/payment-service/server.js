@@ -1,8 +1,11 @@
 require('dotenv').config(); // environment variables
 const express = require('express');
+const cors = require('cors');//nuevo
 const axios = require('axios'); // to do requests to other services
 const app = express();
+app.use(cors()); //nuevo
 app.use(express.json()); // middleware
+
 // PORT needs to be in capitals(?)
 const PORT = process.env.PORT || 5005;
 
@@ -28,7 +31,8 @@ app.post('/api/v1/payments/process', async (req, res) => {
     console.log('Received payment processing request:', req.body);
     
     // Extrae los datos necesarios del cuerpo de la petición
-    const { orderId, userId, amount, currency } = req.body;
+    // CORREGIDO: 'currency' ha sido eliminado de la desestructuración
+    const { orderId, userId, amount } = req.body; 
     
     // here i create an id but is not necesarry i think
     // CORREGIDO: Usar backticks (`) para template literals
@@ -39,7 +43,8 @@ app.post('/api/v1/payments/process', async (req, res) => {
     let httpStatusForClient; // codigo HTTP
 
     // acá valida los datos de entrada, si esta todo ok es success sino es failed
-    if (!orderId || !userId || !amount || !currency || typeof amount !== 'number' || amount <= 0) {
+    // CORREGIDO: 'currency' ha sido eliminado de la validación
+    if (!orderId || !userId || !amount || typeof amount !== 'number' || amount <= 0) {
         paymentStatusForOrder = 'failed';
         responseMessage = 'Payment failed';
         httpStatusForClient = 400; // error de bad request
@@ -60,14 +65,15 @@ try {
     }
 
     // HTTP PUT request to Order-service
-    const orderUpdateEndpoint = `<span class="math-inline">\{ORDER\_SERVICE\_URL\}/api/v1/orders/</span>{orderId}/payment-status`;
+    // CORREGIDO: Sintaxis correcta de template literal para la URL (elimina el span LaTeX)
+    const orderUpdateEndpoint = `${ORDER_SERVICE_URL}/api/v1/orders/${orderId}/payment-status`;
     // CORREGIDO: Usar la variable correcta 'paymentStatusForOrder'
     console.log(`Attempting to notify Order Service at: ${orderUpdateEndpoint} with status: ${paymentStatusForOrder}`);
     const orderResponse = await axios.put(orderUpdateEndpoint, {
                 status: paymentStatusForOrder,
                 transactionId: transactionId,
                 paymentAmount: amount,
-                paymentCurrency: currency
+                // CORREGIDO: 'paymentCurrency' ha sido eliminado de los datos enviados al Order Service
             });
 
     console.log('Order Service response:', orderResponse.status, orderResponse.data);
