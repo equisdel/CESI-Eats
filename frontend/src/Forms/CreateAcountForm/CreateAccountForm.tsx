@@ -18,7 +18,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   role
 }) => {
   const [form, setForm] = useState({
-    mail: "",
+    email: "",
     password: "",
     firstname: "",
     lastname: "",
@@ -33,16 +33,17 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      role: role,
-      mail: form.mail,
+      type: role,
+      email: form.email,
       password: form.password,
       info: {
-        firstname: form.firstname,
-        lastname: form.lastname,
+        first_name: form.firstname,   
+        last_name: form.lastname,     
         phone_number: form.phone_number,
         birthday_date: form.birthday_date,
       },
     };
+    console.log("!!!",JSON.stringify(payload))
     await fetch("http://localhost:8080/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,14 +71,14 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
           />
           <NameFields
             className="mt-4"
-            firstName={form.firstName}
-            lastName={form.lastName}
-            birthdate={form.birthdate}
+            firstname={form.firstname}
+            lastname={form.lastname}
             onChange={handleChange}
           />
           <ContactFields
             className="mt-4"
-            phone={form.phone}
+            phone_number={form.phone_number}
+            birthday_date={form.birthday_date}
             onChange={handleChange}
           />
           <EmailField

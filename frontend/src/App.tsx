@@ -5,7 +5,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<EndUserWelcomePage />} />
+        <Route path="/" element={<EndUserWelcomePage/>} />
         <Route path="/create-acount" element={<EndUserWelcomePage />} />
 
       </Routes>

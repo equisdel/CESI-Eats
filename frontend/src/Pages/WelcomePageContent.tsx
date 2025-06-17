@@ -1,7 +1,7 @@
 import React from "react";
 import { HeroSection } from "../Components/HeroSection.tsx";
 import { DecorationIcons } from "../Components/DecorationIcons.tsx";
-import { LoginSignupForm } from "../Forms/LoginSignupForm.tsx";
+import { LoginSignupForm } from "../Forms/LoginSignUpForm.tsx";
 import { CreateAccountForm } from "../Forms/CreateAcountForm/CreateAccountForm.tsx";
 
 function WelcomePageContent() {

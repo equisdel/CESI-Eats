@@ -6,9 +6,9 @@ const JWT_TOKEN_LIFETIME = process.env.JWT_TOKEN_LIFETIME || "1h";
 
 const User = require('../models/user.model');
 
-async function getUser(type,mail) {
+async function getUser(email) {
     try {
-        let user = await User.findOne( { where: {mail: mail, role: type} })
+        let user = await User.findOne( { where: {email} })
         return user
     } catch (error) {
         return null
@@ -38,9 +38,9 @@ const authenticate = async (req, res) => {
 
 }
 
-const register = async (req, res) => {  // Changed to const definition
-    const { type, mail, password, info } = req.body;
-    const user = await getUser(type, mail);
+const register = async (req, res) => {  
+    const { type, email, password, info } = req.body;
+    const user = await getUser(email);
     if (user) {
         return res.status(409).json({ error: 'User already exists' });
     } else {
@@ -49,7 +49,7 @@ const register = async (req, res) => {  // Changed to const definition
             const newUser = await User.create({
                 first_name: info.first_name,
                 last_name: info.last_name,
-                mail: mail,
+                email: email,
                 password: hashed_pw,
                 phone_number: info.phone_number,
                 birthday_date: info.birthday_date,
@@ -64,11 +64,11 @@ const register = async (req, res) => {  // Changed to const definition
 }
 
 const login = async (req, res) => {  // Changed to const definition
-    const { type, mail, password } = req.body;
+    const { email, password } = req.body;
     try {
-        const user = await getUser(type, mail);
+        const user = await getUser(email);
         if (user && bcrypt.compareSync(password, user.password)) {
-            const token = jwt.sign({ mail: user.mail }, JWT_ACCESS_KEY, { expiresIn: JWT_TOKEN_LIFETIME });
+            const token = jwt.sign({ email: user.email }, JWT_ACCESS_KEY, { expiresIn: JWT_TOKEN_LIFETIME });
             return res.status(200).json({ token });
         } else {
             return res.status(401).json({ error: 'Invalid credentials' });

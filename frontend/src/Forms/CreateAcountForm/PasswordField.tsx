@@ -1,21 +1,27 @@
 "use client";
-import * as React from "react";
 
 interface PasswordFieldProps {
   className?: string;
+  password: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const PasswordField: React.FC<PasswordFieldProps> = ({ className = "" }) => {
+export const PasswordField: React.FC<PasswordFieldProps> = ({
+  className = "",
+  password,
+  onChange,
+}) => {
   return (
     <div className={className}>
-      <label className="z-10 self-start mt-2.5 text-base font-bold leading-10 text-slate-800 max-md:ml-1 block">
-        PASSWORD
-      </label>
       <input
         type="password"
-        className="px-5 py-2.5 text-xs font-bold leading-4 text-orange-300 bg-orange-50 rounded-xl max-md:ml-0.5 w-full border-0"
+        name="password"
+        value={password}
+        onChange={onChange}
+        className="w-full h-12 bg-orange-50 rounded-xl border-0 px-3 placeholder-orange-400 font-normal text-base text-slate-800"
         placeholder="Use 8 or more characters mixing letters and numbers, with at least one special symbol"
         aria-label="Password"
+        required
       />
     </div>
   );
