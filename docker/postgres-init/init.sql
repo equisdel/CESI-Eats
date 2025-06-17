@@ -103,19 +103,20 @@ CREATE TABLE Restaurant (
 CREATE TABLE Menu (
     menu_id VARCHAR PRIMARY KEY,
     restaurant_id UUID REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE,
-    price DECIMAL,
-    photo TEXT
+    menu_name VARCHAR,
+    menu_description VARCHAR,
+    menu_price DECIMAL,
+    menu_photo TEXT
 );
 
 -- Table : Item
 CREATE TABLE Item (
     item_id VARCHAR PRIMARY KEY,
     restaurant_id UUID REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE,
-    name VARCHAR,
-    price DECIMAL,
-    description VARCHAR,
-    ingredients VARCHAR,
-    photo TEXT
+    item_name VARCHAR,
+    item_ingredients VARCHAR,
+    item_price DECIMAL,
+    item_photo TEXT
 );
 
 -- Table : Order
@@ -139,7 +140,7 @@ CREATE TABLE Delivery (
 -- Table de liaison : Order-Menu
 CREATE TABLE "Order-Menu" (
     order_id UUID REFERENCES "Order"(order_id) ON DELETE CASCADE,
-    menu_id VARCHAR REFERENCES Menu(menu_id) ON DELETE CASCADE,
+    menu_id VARCHAR REFERENCES Menu(menu_id) ON DELETE SET NULL,    -- we don't want to delete order history entries, even if menu doesn't exist anymore
     PRIMARY KEY (order_id, menu_id)
 );
 

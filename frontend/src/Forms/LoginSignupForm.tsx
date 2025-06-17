@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, FormEvent } from "react";
 
+
 type Props = {
   onSignUp: () => void;
 };
@@ -37,7 +38,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
         alert("Login successful!");
         
         // Redirect user 
-        window.location.href = "/home"; //REDIRIGIR A LOS DIFERENTES HOMES DEPENDIENDO DEL ROL
+        window.location.href = "/homeUser"; //REDIRIGIR A LOS DIFERENTES HOMES DEPENDIENDO DEL ROL
     } catch (error) {
         console.error("Login error:", error);
 

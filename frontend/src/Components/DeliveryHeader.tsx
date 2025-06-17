@@ -1,32 +1,20 @@
 import React, { useState } from "react";
-<<<<<<< HEAD
-=======
 import logo from '../assets/logo_cesi_eats.png';
-import profile from '../assets/userIcon.png';
+import profile from '../assets/delivery-icon.png';
 import panier from '../assets/panier.png'; // 🛒 ton icône panier
->>>>>>> origin/feature/menu-item
 
-interface UserHeaderProps {
+interface DeliveryHeaderProps {
   restaurantName?: string;
   onSearchClick?: () => void;
   onProfileClick?: () => void;
   onMenuClick?: () => void;
-
-  // ✅ Nouvelle prop pour ouvrir le panier
-  onCartClick?: () => void;
-    cartCount?: number; // ✅ NOUVEAU
-
 }
 
-export const UserHeader: React.FC<UserHeaderProps> = ({
+export const DeliveryHeader: React.FC<DeliveryHeaderProps> = ({
   restaurantName = "End-User's Name",
   onSearchClick,
   onProfileClick,
   onMenuClick,
-  onCartClick, // ✅ Reçu ici
-  cartCount = 0, // ✅ valeur par défaut
-
-  
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -34,16 +22,13 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
     setShowNotifications((prev) => !prev);
   };
 
+
   return (
     <header className="flex justify-between items-center px-6 py-3 w-full font-bold bg-[#ACA7AA] text-white relative">
       
       {/* Logo */}
       <div className="flex items-center gap-2">
-<<<<<<< HEAD
-        <img src="../Images/CesiEatsLogo.png" alt="CESI Eats Logo" className="w-[100px] h-auto object-contain" />
-=======
         <img src={logo} alt="CESI Eats Logo" className="w-[100px] h-auto object-contain" />
->>>>>>> origin/feature/menu-item
       </div>
 
       {/* Search */}
@@ -61,11 +46,7 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
         <span className="grow self-stretch my-auto">{restaurantName}</span>
 
         <button onClick={onProfileClick} aria-label="Profile">
-<<<<<<< HEAD
-          <img src="../Images/userIcon.png" alt="Profile" className="w-[60px] aspect-square object-contain" />
-=======
           <img src={profile} alt="Profile" className="w-[60px] aspect-square object-contain" />
->>>>>>> origin/feature/menu-item
         </button>
 
         {/* Notification */}
@@ -95,31 +76,9 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
           )}
         </div>
 
-        {/* 🛒 Panier avec clic déclencheur */}
-        <div className="relative">
-          <button onClick={onCartClick} className="relative">
-<<<<<<< HEAD
-  <img src="../Images/panier.png" alt="Panier" className="w-9 cursor-pointer" />
-=======
-  <img src={panier} alt="Panier" className="w-9 cursor-pointer" />
->>>>>>> origin/feature/menu-item
-  {cartCount > 0 && (
-    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-      {cartCount}
-    </span>
-  )}
-</button>
-          {cartCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-              {cartCount}
-            </span>
-          )}
-        </div>
+        
       </div>
+
     </header>
   );
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> origin/feature/menu-item

@@ -19,7 +19,7 @@ async function getUser(email) {
 const authenticate = async (req, res) => {
 
     try {
-        console.log("?")
+
         let authHeader = req.headers["authorization"]
 
         if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -69,7 +69,7 @@ const register = async (req, res) => {
                 password: hashed_pw,
                 phone_number: info.phone_number,
                 birthday_date: info.birthday_date,
-                role: type || 'user',
+                role: role || 'user',
             });
 
             let newRestaurant = null;
@@ -113,48 +113,3 @@ const login = async (req, res) => {  // Changed to const definition
 }
 
 module.exports = { register, login, authenticate };
-
-/*
-async function register(req, res) {
-    const { type, mail, password, info } = req.body;
-    const user = await getUser(type,mail) // verify for existence
-    if (user) {
-        res.status(500).json({ error: 'failed to create user' });
-    } else {
-        hashed_pw = null //bcrypt.hashSync(password, 10)   // hashed password for extra safety
-        try {
-            const newUser = User.create({
-                first_name : info.first_name,
-                last_name : info.last_name,
-                mail,
-                password, // change to hashed_pw 
-                phone_number : info.phone_number,
-                birthday_date : info.birthday_date,
-                role: type || 'user',
-            });
-            res.status(201).json({ msg: 'new user created successfully!', user: newUser });
-        } catch (error) {
-            console.error('[!] error creating user:', error);
-            res.status(500).json({ error: 'failed to create user' });
-        } 
-    }
-}
-
-async function login(req, res) {
-
-    const { type, mail, password, info } = req.body
-
-    const user = await getUser(type,mail) 
-
-    // verification: user exists and password is right
-    // if (user && bcrypt.compareSync(password, user.hashed_pw)) {
-    if (user && password==user.password) {
-        const accessToken = jwt.sign({ mail: user.mail }, JWT_KEY, { expiresIn: JWT_TOKEN_LIFETIME, algorithm: "HS256" });
-        return res.status(200).json({ token: accessToken });
-    } else {
-        return res.status(401).json({ message: "invalid login credentials" })
-    }
-}
-
-module.exports = { register, login };
-*/
