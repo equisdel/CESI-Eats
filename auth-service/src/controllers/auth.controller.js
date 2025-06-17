@@ -18,7 +18,7 @@ async function getUser(role, mail) {
 const authenticate = async (req, res) => {
 
     try {
-        console.log("?")
+
         let authHeader = req.headers["authorization"]
 
         if (authHeader && authHeader.startsWith("Bearer ")) {

@@ -106,22 +106,22 @@ const deleteMenu = async (req,res) => {
 // MENU SEARCH
 const findMenus = async (req,res) => {
 
+    console.log("xd")
     const { menu_id, restaurant_id, limit, order, offset, items } = req.query
 
     try {
-
         const where = {};
         if (menu_id) where.menu_id = menu_id;
         if (restaurant_id) where.restaurant_id = restaurant_id;
 
         const menus = await Menu.findAll({
-            where,
+            where: where,
             limit: limit ? parseInt(limit) : 10,
             order: order ? [['menu_name', order]] : [['menu_name', 'ASC']], // default order
             offset: offset ? parseInt(offset) : 0
         });
         
-        if (items && items===true) {    // adds array of items that compose each menu
+        if (items && items=="1") {    // adds array of items that compose each menu
 
             for (const menu of menus) {
                 menu.dataValues.items = []; 
