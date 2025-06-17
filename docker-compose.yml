@@ -60,8 +60,6 @@ services:
       - DATABASE_URL=postgres://user:password@postgres:5432/cesi_users
     depends_on:
       - postgres
-    ports:
-      - "5002:5002"
     networks:
       - cesi-network
 

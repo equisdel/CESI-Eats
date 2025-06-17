@@ -26,6 +26,10 @@ export function LoginSignupForm({ onSignUp }: Props) {
 
         const data = await response.json();
 
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
         // Successfully logged in
         console.log("Login successful:", data);
 
@@ -33,7 +37,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
         alert("Login successful!");
         
         // Redirect user 
-        window.location.href = "/user-page";
+        window.location.href = "/home"; //REDIRIGIR A LOS DIFERENTES HOMES DEPENDIENDO DEL ROL
     } catch (error) {
         console.error("Login error:", error);
 

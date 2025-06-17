@@ -18,7 +18,7 @@ CREATE TABLE Restaurant (
     name VARCHAR,
     email VARCHAR,
     phone_number VARCHAR(15),
-    adress VARCHAR,
+    address VARCHAR,
     open_hour VARCHAR,
     close_hour VARCHAR
 );

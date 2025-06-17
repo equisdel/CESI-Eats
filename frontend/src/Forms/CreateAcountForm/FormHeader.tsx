@@ -1,20 +1,15 @@
 "use client";
-import * as React from "react";
+import React from "react";
 
-interface FormHeaderProps {
-  className?: string;
-}
+export const FormHeader: React.FC = () => (
+  <header className="mt-6 mb-6">
+    <h1 className="text-3xl font-extrabold text-slate-800 text-center tracking-wide pt-2">
+      CREATE ACCOUNT
+    </h1>
+    <p className="text-base text-slate-500 text-center mt-2">
+      Enter your personal information to get started
+    </p>
+  </header>
+);
 
-export const FormHeader: React.FC<FormHeaderProps> = ({ className = "" }) => {
-  return (
-    <header className={`flex gap-3 items-start self-start font-bold text-slate-800 max-md:ml-1 mt-8 ${className}`}>
-      <div className="self-end mt-14 ml-2 text-2xl leading-6">
-        NAME
-      </div>
-      <h1 className="flex-auto self-start text-3xl">
-        CREATE ACCOUNT
-      </h1>
-    </header>
-    
-  );
-};
+export default FormHeader;

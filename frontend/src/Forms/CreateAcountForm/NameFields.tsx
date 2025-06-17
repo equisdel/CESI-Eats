@@ -17,23 +17,31 @@ export const NameFields: React.FC<NameFieldsProps> = ({
   return (
     <section className={`flex gap-3 leading-10 max-md:ml-1 ${className}`}>
       <div className="flex flex-col flex-1 text-base whitespace-nowrap text-slate-800">
+        <label className="mb-1 font-bold text-slate-800" htmlFor="firstname">
+          FIRST NAME
+        </label>
         <input
+          id="firstname"
           type="text"
           name="firstname"
           value={firstname}
           onChange={onChange}
-          className="w-[190px] h-12 bg-orange-50 rounded-xl border-0 px-3 placeholder-orange-400 font-normal text-base text-slate-800"
+          className="w-full h-12 bg-orange-50 rounded-xl border-0 px-3 placeholder-orange-400 font-normal text-base text-slate-800"
           placeholder="First name"
           aria-label="First name"
         />
       </div>
-      <div className="flex-1">
+      <div className="flex flex-col flex-1 text-base whitespace-nowrap text-slate-800">
+        <label className="mb-1 font-bold text-slate-800" htmlFor="lastname">
+          LAST NAME
+        </label>
         <input
+          id="lastname"
           type="text"
           name="lastname"
           value={lastname}
           onChange={onChange}
-          className="w-[188px] h-12 bg-orange-50 rounded-xl border-0 px-3 placeholder-orange-400 font-normal"
+          className="w-full h-12 bg-orange-50 rounded-xl border-0 px-3 placeholder-orange-400 font-normal text-base text-slate-800"
           placeholder="Last name"
           aria-label="Last name"
         />

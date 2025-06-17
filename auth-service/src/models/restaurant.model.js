@@ -10,9 +10,9 @@ const Restaurant = sequelize.define('Restaurant', {
   },
   owner_restaurant: {
     type: DataTypes.UUID,
-    allowNull: true,  
+    allowNull: false,  
     references: {
-      model: 'User',
+      model: "User",
       key: 'user_id',
     },
   },

@@ -5,6 +5,7 @@ const JWT_ACCESS_KEY = process.env.JWT_ACCESS_KEY || "default_key";
 const JWT_TOKEN_LIFETIME = process.env.JWT_TOKEN_LIFETIME || "1h";
 
 const User = require('../models/user.model');
+const Restaurant = require('../models/restaurant.model');
 
 async function getUser(email) {
     try {
@@ -38,8 +39,23 @@ const authenticate = async (req, res) => {
 
 }
 
+async function registerRestaurant(restaurantInfo, ownerId) {
+    try {
+        console.log("restaurantInfo recibido:", restaurantInfo);
+        console.log("owner_restaurant:", ownerId);
+        const newRestaurant = await Restaurant.create({
+            ...restaurantInfo,
+            owner_restaurant: ownerId,
+        });
+        return newRestaurant;
+    } catch (err) {
+        console.error("Error creando restaurante:", err);
+        throw err;
+    }
+}
+
 const register = async (req, res) => {  
-    const { type, email, password, info } = req.body;
+    const { type, email, password, info, restaurantInfo} = req.body;
     const user = await getUser(email);
     if (user) {
         return res.status(409).json({ error: 'User already exists' });
@@ -55,7 +71,24 @@ const register = async (req, res) => {
                 birthday_date: info.birthday_date,
                 role: type || 'user',
             });
-            return res.status(201).json({ msg: 'User created successfully!', user: newUser });
+
+            let newRestaurant = null;
+            if (type === "restaurant" && restaurantInfo) {
+                //We do this to ensure that the user is create in the table
+                const owner = await User.findOne({ where: { email } });
+            
+                
+                newRestaurant = await registerRestaurant(restaurantInfo, owner.user_id);
+            }
+
+            return res.status(201).json({ 
+                msg: type === "restaurant"
+                ? "User and restaurant created successfully!"
+                : "User created successfully!",
+                user: newUser,
+                restaurant: newRestaurant
+            });
+
         } catch (error) {
             console.error('Error creating user:', error);
             return res.status(500).json({ error: 'Failed to create user' });

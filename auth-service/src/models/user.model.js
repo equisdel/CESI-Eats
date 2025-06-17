@@ -37,10 +37,13 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW, // Default to current timestamp
   },
   role: {
-    type: DataTypes.STRING, // Cambiar a STRING en lugar de ENUM
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'user', // Valor predeterminado
-  },
+    defaultValue: 'user',
+  }
+}, {
+  tableName: 'User',    
+  timestamps: false      
 });
 
 module.exports = User;
