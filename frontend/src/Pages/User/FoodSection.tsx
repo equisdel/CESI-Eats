@@ -92,7 +92,8 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide"
           style={{ maxWidth: "1280px", scrollBehavior: "smooth", scrollbarWidth: "none" }}
         >
-          {menus.map((menu, i) => (
+{Array.isArray(menus) &&
+  menus.map((menu, i) => (
             <div key={menu.menu_id} className="shrink-0">
               <FoodCard
                 title={menu.Restaurant?.name || "Menu"}

@@ -31,6 +31,32 @@ const createOrder = async (req, res) => {
   }
 };
 
+export const getAcceptedOrdersByRestaurant = async (req, res) => {
+  const { restaurant_id } = req.params;
+
+  try {
+    const orders = await Order.findAll({
+      include: [{
+        model: OrderMenu,
+        required: true,
+        include: [{
+          model: Menu,
+          required: true,
+          where: { restaurant_id }
+        }]
+      }],
+      where: {
+        accepted_by_restaurant: true
+      },
+      distinct: true
+    });
+
+    res.json(orders);
+  } catch (err) {
+    console.error('Erreur lors de la récupération des commandes acceptées :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};
 
 export const getPendingOrdersByRestaurant = async (req, res) => {
   const { restaurant_id } = req.params;
@@ -62,6 +88,25 @@ export const getPendingOrdersByRestaurant = async (req, res) => {
       console.error('❌ Erreur SQL ou Sequelize:', err.message);
 
     console.error('Erreur lors de la récupération des commandes :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+};
+export const acceptOrder = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updated = await Order.update(
+      { accepted_by_restaurant: true },
+      { where: { order_id: id } }
+    );
+
+    if (updated[0] === 0) {
+      return res.status(404).json({ error: "Commande non trouvée" });
+    }
+
+    res.json({ message: "Commande acceptée" });
+  } catch (err) {
+    console.error('Erreur lors de l’acceptation de la commande :', err);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 };
