@@ -1,36 +1,69 @@
-const express = require('express');
-const cors = require('cors');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+import express from 'express';
+import axios from 'axios';
+import cors from 'cors';
 
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 8000;
 
-// Logger
-app.use((req, res, next) => {
-  console.log(`[Gateway] ${req.method} ${req.url}`);
-  next();
+// ✅ Autorise les requêtes du frontend React (port 3000)
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
+app.use(express.json());
+
+
+
+// ✅ Route manuelle vers order-service
+app.post('/api/orders', async (req, res) => {
+  try {
+    const response = await axios.post('http://order-service:5003/orders', req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    console.error('Erreur vers order-service :', err.message);
+    res.status(500).json({ error: 'Erreur lors de la requête vers order-service' });
+  }
 });
 
-// Dictionnaire des routes dynamiques
-const serviceProxyMap = {
-  '/api/orders': 'http://order-service:5003',
-  '/api/users': 'http://user-service:5002',
-  '/api/menu': 'http://menu-service:5004',
-  '/api/payments': 'http://payment-service:5005',
-  '/api/delivery': 'http://delivery-service:5006',
-  '/api/analytics': 'http://analytics-service:5007',
-  '/api/components': 'http://component-service:5008',
-};
-
-// Proxy dynamique
-Object.entries(serviceProxyMap).forEach(([route, target]) => {
-  app.use(route, createProxyMiddleware({
-    target,
-    changeOrigin: true,
-    pathRewrite: (path, req) => path.replace(route, ''), // retire le préfixe
-  }));
+// ✅ Route manuelle vers menu-service
+app.get('/api/menus/fake-menus', async (req, res) => {
+  try {
+    const response = await axios.get('http://menu-service:5004/fake-menus');
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    console.error('Erreur vers menu-service :', err.message);
+    res.status(500).json({ error: 'Erreur vers menu-service' });
+  }
+});
+app.get('/api/orders/pending/:restaurant_id', async (req, res) => {
+  try {
+    const response = await axios.get(`http://order-service:5003/orders/pending/${req.params.restaurant_id}`);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error('Erreur proxy vers order-service:', error.message);
+    res.status(500).json({ error: 'Erreur proxy gateway' });
+  }
 });
 
-app.listen(8000, () => {
-  console.log('🚀 API Gateway listening on port 8000');
+// ✅ Route manuelle pour servir les images des menus
+app.use('/api/menus/images', async (req, res) => {
+  try {
+    const imageUrl = `http://menu-service:5004/images${req.url}`;
+    const response = await axios.get(imageUrl, { responseType: 'stream' });
+    response.data.pipe(res);
+  } catch (err) {
+    console.error('Erreur image menu :', err.message);
+    res.status(404).send('Image non trouvée');
+  }
+});
+
+// TODO: Ajouter ici d’autres routes manuelles (users, payments, etc.)
+
+// ✅ Start the gateway
+app.listen(PORT, () => {
+  console.log(`🚀 Gateway running manually on port ${PORT}`);
 });

@@ -1,4 +1,5 @@
 version: '3.9'
+
 services:
   frontend:
     build: ./frontend
@@ -8,7 +9,6 @@ services:
     networks:
       - cesi-network
 
-  # 🛡️ AUTH SERVICE
   auth-service:
     build: ./auth-service
     container_name: auth-service
@@ -19,12 +19,11 @@ services:
     networks:
       - cesi-network
 
-  #  API GATEWAY
   gateway:
     build: ./gateway
     container_name: gateway
-    ports:
-      - "8000:8000"
+    ports:                   # ← AJOUTE CETTE LIGNE
+    - "8000:8000"
     networks:
       - cesi-network
     depends_on:
@@ -32,94 +31,90 @@ services:
       - auth-service
     environment:
       - PORT=8000
-    
 
-  # 👤 USER SERVICE
   user-service:
     build: ./services/user-service
     container_name: user-service
     environment:
       - PORT=5002
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_users
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
       - cesi-network
 
-  # 🧾 ORDER SERVICE
   order-service:
     build: ./services/order-service
     container_name: order-service
     environment:
       - PORT=5003
       - MONGO_URI=mongodb+srv://dhiarabaaoui:Dhia2001@cluster0.s1mgwkm.mongodb.net/CesiETS?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
+
     networks:
       - cesi-network
     depends_on:
-      - mongo
       - postgres
 
-  # 🍽️ MENU SERVICE
+
   menu-service:
     build: ./services/menu-service
     container_name: menu-service
     environment:
       - PORT=5004
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_menus
-    depends_on:
-      - postgres
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
+    volumes:
+      - ./services/menu-service/public/images:/app/public/images
     networks:
       - cesi-network
+    depends_on:
+      - postgres
 
-  # 💳 PAYMENT SERVICE
+
   payment-service:
     build: ./services/payment-service
     container_name: payment-service
     environment:
       - PORT=5005
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_payments
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
       - cesi-network
 
-  # 🚚 DELIVERY SERVICE
   delivery-service:
     build: ./services/delivery-service
     container_name: delivery-service
     environment:
       - PORT=5006
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_deliveries
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
       - cesi-network
 
-  # 📊 ANALYTICS SERVICE
   analytics-service:
     build: ./services/analytics-service
     container_name: analytics-service
     environment:
       - PORT=5007
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_analytics
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
       - cesi-network
 
-  # 🧩 COMPONENT SERVICE
   component-service:
     build: ./services/component-service
     container_name: component-service
     environment:
       - PORT=5008
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_components
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
       - cesi-network
 
-  # 🗃️ POSTGRESQL
   postgres:
     image: postgres:13
     container_name: postgres
@@ -129,13 +124,12 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: cesi_global
     volumes:
-      - ./docker/postgres:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     networks:
       - cesi-network
 
-  # 🗄️ MONGODB
   mongo:
     image: mongo:6
     container_name: mongo
@@ -144,7 +138,6 @@ services:
     networks:
       - cesi-network
 
-  # 🌍 NGINX (Reverse Proxy)
   nginx:
     image: nginx:alpine
     container_name: nginx

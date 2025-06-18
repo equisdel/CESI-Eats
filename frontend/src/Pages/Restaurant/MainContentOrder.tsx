@@ -1,0 +1,142 @@
+import React, { useEffect, useState } from "react";
+import ProfileIcon from "../../assets/Profile-Icon.png";
+import axios from "axios";
+
+// ---------------- OrderCard ----------------
+interface OrderCardProps {
+  orderNumber: string;
+  units: string;
+  totalPrice: string;
+    imageUrl: string;
+
+}
+
+const OrderCard: React.FC<OrderCardProps> = ({
+  orderNumber,
+  units,
+  totalPrice,
+  imageUrl
+}) => {
+  return (
+    <article className="relative h-[115px] w-[272px] rounded-xl bg-zinc-400 p-2 flex items-center">
+      <img
+        src={imageUrl}
+        alt="Order Menu"
+        className="w-[100px] h-[100px] rounded-md object-cover"
+      />
+      <div className="ml-3 flex flex-col justify-between h-full py-1">
+        <div>
+          <h3 className="text-base font-bold text-slate-800">
+            Order : <span className="font-normal">{orderNumber}</span>
+          </h3>
+          <p className="text-slate-800 text-sm mt-1">
+            Prix: <span className="font-bold">{totalPrice} €</span><br />
+            UNITS: <span className="font-bold">{units}</span>
+          </p>
+        </div>
+        <div className="flex gap-2 mt-2">
+          <button className="text-xs text-orange-50 bg-red-400 rounded-xl px-3 py-1 hover:bg-red-500 transition">REFUSE</button>
+          <button className="text-xs text-orange-50 bg-lime-600 rounded-xl px-3 py-1 hover:bg-lime-700 transition">ACCEPT</button>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+
+// ---------------- OrderColumn ----------------
+interface OrderColumnProps {
+  orders: any[];
+}
+
+const OrderColumn: React.FC<OrderColumnProps> = ({ orders }) => {
+  const baseUrl = window.location.origin.includes("localhost")
+    ? "http://localhost:8000"
+    : window.location.origin;
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      {orders.map((order) => {
+        const menus = order.OrderMenus?.map((om: any) => om.Menu).filter(Boolean);
+        const randomImage = menus?.length
+          ? `${baseUrl}/api/menus/images/${menus[Math.floor(Math.random() * menus.length)].photo}`
+          : `${baseUrl}/default.jpg`;
+
+        return (
+          <OrderCard
+            key={order.order_id}
+            orderNumber={`#${order.order_id.substring(0, 6)}`}
+            units={`#${order.OrderMenus.length}`}
+            totalPrice={order.total_price}
+            imageUrl={randomImage}
+          />
+        );
+      })}
+
+      {[...Array(Math.max(0, 3 - orders.length))].map((_, i) => (
+        <div key={i} className="h-[115px] w-[272px] rounded-xl bg-zinc-400 opacity-30" />
+      ))}
+    </div>
+  );
+};
+
+
+
+// ---------------- OrderStatusColumn ----------------
+interface OrderStatusColumnProps {
+  title: string;
+  color: string;
+  orders: any[];
+}
+
+const OrderStatusColumn: React.FC<OrderStatusColumnProps> = ({
+  title,
+  color,
+  orders
+}) => (
+  <div className="flex flex-col items-center gap-4">
+    <button
+      className="text-3xl font-bold text-orange-50 rounded-xl px-6 py-4 w-[300px] cursor-pointer"
+      style={{ backgroundColor: color }}
+    >
+      {title}
+    </button>
+    <OrderColumn orders={orders} />
+  </div>
+);
+
+// ---------------- MainContent ----------------
+export const MainContent: React.FC = () => {
+  const [pendingOrders, setPendingOrders] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const baseUrl = window.location.origin.includes("localhost")
+          ? "http://localhost:8000"
+          : window.location.origin;
+
+        const response = await axios.get(`${baseUrl}/api/orders/pending/10000000-0000-0000-0000-000000000001`);
+        setPendingOrders(response.data);
+      } catch (err) {
+        console.error("Erreur lors du fetch des commandes :", err);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  return (
+    <main className="left-60 h-[949px] top-[75px] w-[1200px]">
+      <nav className="text-zinc-400 text-xl text-left pl-2 mt-6">CESI-Eats &gt; Home &gt; Orders</nav>
+
+      <h1 className="text-4xl font-bold text-slate-800 text-center mb-12">Orders</h1>
+
+      <section className="flex justify-center gap-6">
+        <OrderStatusColumn title="PENDING" color="#9B9BA1" orders={pendingOrders} />
+        <OrderStatusColumn title="PREPARING" color="#FDD835" orders={[]} />
+        <OrderStatusColumn title="READY" color="#689F38" orders={[]} />
+      </section>
+    </main>
+  );
+};
