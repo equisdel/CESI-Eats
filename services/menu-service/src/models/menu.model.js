@@ -24,8 +24,9 @@ const Menu = sequelize.define('Menu', {
     defaultValue: DataTypes.NOW,
   }, 
 }, {
-  tableName: 'Menu',
-  freezeTableName: true,
+  tableName: 'menu',
+  freezeTableName: false,
+  timestamps: false,          
 }
 );
 
