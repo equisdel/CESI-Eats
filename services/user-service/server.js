@@ -1,11 +1,26 @@
 const express = require('express');
+const { sequelize, connectDB } = require('./config/db');
+const userRoutes = require('./routes/user.routes');
+
 const app = express();
-const port = process.env.PORT || 5000;
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send(`✅ ${process.env.PORT} - ${process.env.SERVICE_NAME || 'Service'} is running`);
-});
+async function startServer() {
+  try {
+    await connectDB();
+    await sequelize.sync({ alter: true });
+    //await sequelize.sync();
+    console.log('Database synchronized.');
 
-app.listen(port, () => {
-  console.log(`✅ ${process.env.SERVICE_NAME || 'Service'} listening on port ${port}`);
-});
+    app.use('/users', userRoutes);
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Error starting the server:', error);
+  }
+}
+
+startServer();

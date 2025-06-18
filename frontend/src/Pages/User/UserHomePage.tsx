@@ -25,7 +25,7 @@ const handleMarkAsPaid = (id: string) => {
         {
           id: menu.menu_id,
           title: `Menu #${menu.menu_id}`,
-          price: menu.price,
+          price: menu.menu_price,
           quantity: 1,
 imageUrl: `http://localhost:8000/api/menus/images/${menu.photo}`, // ✅ bon chemin via Gateway
           paid: false,

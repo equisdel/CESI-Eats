@@ -57,7 +57,7 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
 // ✅ Appel réel vers le Gateway en mode dev
 const fetchMenus = async () => {
   try {
-    const response = await fetch("http://localhost:8000/api/menus/fake-menus");
+    const response = await fetch("http://localhost:8000/api/menus/menu/");
     const data = await response.json();
     return data;
   } catch (err) {

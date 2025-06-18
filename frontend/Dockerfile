@@ -5,7 +5,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # 👇 Installe axios directement ici
-RUN npm install && npm install axios
+RUN npm install 
+##&& npm install axios
 
 COPY . .
 

@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../Config/db.js'; // adapte le chemin si besoin
+import sequelize from '../Config/db.js';
 
 const Menu = sequelize.define('Menu', {
   menu_id: {
@@ -10,8 +10,14 @@ const Menu = sequelize.define('Menu', {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  price: DataTypes.DECIMAL,
-  photo: DataTypes.TEXT,
+  menu_price: {
+    type: DataTypes.DECIMAL,
+    allowNull: false
+  },
+  menu_photo: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  }
 }, {
   tableName: 'menu',
   timestamps: false

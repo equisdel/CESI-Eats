@@ -1,6 +1,6 @@
 import React from 'react';
 import { RestaurantHeader } from '../../Components/RestaurantHeader.tsx';
-import { Sidebar } from '../../Components/Sidebar.tsx';
+import { Sidebar } from '../../Components/RestaurantSidebar-.tsx';
 import { MainContent } from './MainContentOrder.tsx';
 
 

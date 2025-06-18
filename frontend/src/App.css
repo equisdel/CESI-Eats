@@ -193,3 +193,11 @@ body {
   border-color: #f9c23c;
   box-shadow: 0 0 10px #f9c23c66;
 }
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

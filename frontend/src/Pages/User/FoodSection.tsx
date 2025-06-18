@@ -32,7 +32,6 @@ export const FoodCard: React.FC<FoodCardProps> = ({
       <div className={`overflow-hidden rounded-xl ${hasWhiteBackground ? "bg-white" : ""}`}>
         <img
           src={imageUrl}
-          alt={title}
           className="object-cover aspect-[1.2] w-[200px] h-[150px]"
         />
       </div>
@@ -69,6 +68,10 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
 
   const scrollLeft = () => scrollRef.current?.scrollBy({ left: -700, behavior: "smooth" });
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 700, behavior: "smooth" });
+menus.map((menu, i) => {
+  console.log("🧾 Menu reçu :", menu);
+
+});
 
   const baseUrl = window.location.origin.includes("localhost")
     ? "http://localhost:8000"
@@ -96,8 +99,8 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
   menus.map((menu, i) => (
             <div key={menu.menu_id} className="shrink-0">
               <FoodCard
-                title={menu.Restaurant?.name || "Menu"}
-                imageUrl={`${baseUrl}/api/menus/images/${menu.photo}`} // ✅ via Gateway
+                title={menu.menu_name || "Menu"}
+                imageUrl={`${baseUrl}/api/menus/images/${menu.menu_photo}`} // ✅ via Gateway
                 hasWhiteBackground={i % 2 === 0}
                 onAddToCart={() => onAddToCart(menu)}
               />

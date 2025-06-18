@@ -71,10 +71,11 @@ const OrderColumn: React.FC<OrderColumnProps> = ({ orders, onAccept }) => {
 
         if (!imageMapRef.current[orderId] && menus?.length) {
           const randomMenu = menus[Math.floor(Math.random() * menus.length)];
-          imageMapRef.current[orderId] = `${baseUrl}/api/menus/images/${randomMenu.photo}`;
+imageMapRef.current[orderId] = `${baseUrl}/api/menus/images/${randomMenu.menu_photo}`;
         }
 
         const imageUrl = imageMapRef.current[orderId] || `${baseUrl}/default.jpg`;
+  console.log("➡️ order", order); // 🧪
 
         return (
           <OrderCard
@@ -133,6 +134,8 @@ export const MainContent: React.FC = () => {
   const fetchOrders = async () => {
     try {
       const pendingRes = await axios.get(`${baseUrl}/api/orders/pending/${restaurantId}`);
+      console.log("📦 Données reçues côté React :", pendingRes.data);
+
       const preparingRes = await axios.get(`${baseUrl}/api/orders/preparing/${restaurantId}`);
       setPendingOrders(pendingRes.data);
       setPreparingOrders(preparingRes.data);

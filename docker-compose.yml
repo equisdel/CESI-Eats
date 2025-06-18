@@ -9,16 +9,17 @@ services:
       - cesi-network
 
   nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "80:80"
+    image: nginx:latest #Nous allons chercher la dernière version de nginx existante
+    container_name: nginx #Nous nommons le container
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-    depends_on:
-      - gateway
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf #Affectation du fichier de config personnalisé | first part is local : second part is inside the container
+    ports:
+      - "8080:8080" # Nous exposerons sur le port 8080
     networks:
       - cesi-network
+    depends_on:
+     - auth-service # means you have to run it before
+     - gateway
 
 
   # 🛡️ AUTH SERVICE
