@@ -56,8 +56,8 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
 
 const fetchPopularMenus = async () => {
   try {
-    //const response = await fetch("http://localhost:8080/api/menus/menu/");
-    const response = await fetch("http://localhost:5004/menu/");
+    const response = await fetch("http://localhost:8000/api/menu/menu/");
+    //const response = await fetch("http://localhost:5004/menu/");
     console.log(response)
     const data = await response.json();
     return data;

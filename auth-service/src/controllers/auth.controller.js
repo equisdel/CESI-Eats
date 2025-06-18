@@ -49,13 +49,13 @@ async function registerRestaurant(restaurantInfo, ownerId) {
         });
         return newRestaurant;
     } catch (err) {
-        console.error("Error creando restaurante:", err);
+        console.error("Error creating restaurant:", err);
         throw err;
     }
 }
 
 const register = async (req, res) => {  
-    const { type, email, password, info, restaurantInfo} = req.body;
+    const { role, email, password, info, restaurantInfo} = req.body;
     const user = await getUser(email);
     if (user) {
         return res.status(409).json({ error: 'User already exists' });
@@ -73,7 +73,7 @@ const register = async (req, res) => {
             });
 
             let newRestaurant = null;
-            if (type === "restaurant" && restaurantInfo) {
+            if (role === "restaurant" && restaurantInfo) {
                 //We do this to ensure that the user is create in the table
                 const owner = await User.findOne({ where: { email } });
             
@@ -82,7 +82,7 @@ const register = async (req, res) => {
             }
 
             return res.status(201).json({ 
-                msg: type === "restaurant"
+                msg: role === "restaurant"
                 ? "User and restaurant created successfully!"
                 : "User created successfully!",
                 user: newUser,

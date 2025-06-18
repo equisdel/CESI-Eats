@@ -1,33 +1,7 @@
 const User = require('../models/user.model');
 const Restaurant = require('../models/restaurant.model');
 
-//------------------------------------------------------- CREATE USER --------------------------------------------------------------------------
-const createUser = async (req, res) => {
-  try {
-    const { first_name, last_name, email, password, phone_number, birthday_date, role } = req.body;
-
-    if (!first_name || !last_name || !email || !password || !birthday_date) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const newUser = await User.create({
-      first_name,
-      last_name,
-      email,
-      password, 
-      phone_number,
-      birthday_date,
-      role: role || 'user',
-    });
-
-    res.status(201).json({ message: 'User created successfully', user: newUser });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Failed to create user' });
-  }
-};
-
-//------------------------------------------------------- GET USER --------------------------------------------------------------------------
+//------------------------------------------------------- GET USERS --------------------------------------------------------------------------
 const getUsers = async (req, res) => {
   try {
     const users = await User.findAll();
@@ -91,6 +65,7 @@ const deleteUser = async (req, res) => {
 //------------------------------------------------------- GET INFO USER --------------------------------------------------------------------------
 const getUserById = async (req, res) => {
   const userId = req.params.id;
+  console.log("I'm in get info for", userId);
 
   try {
     const user = await User.findByPk(userId, {
@@ -98,6 +73,7 @@ const getUserById = async (req, res) => {
     });
 
     if (!user) {
+      console.log("I didn't find the user");
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -108,46 +84,29 @@ const getUserById = async (req, res) => {
   }
 };
 
-//------------------------------------------------------- CREATE RESTAURANT FOR RESTAURANT OWNER -------------------------------------------------
-const createRestaurantIfProductOwner = async (req, res) => {
-  const userId = req.params.userId;
-  const { name, email, phone_number, adress, open_hour, close_hour } = req.body;
+//------------------------------------------------------- GET NAME USER --------------------------------------------------------------------------
+const getNameUserById = async (req, res) => {
+  const userId = req.params.id;
+  console.log("I'm in get info for", userId);
 
   try {
-    // Find the restaurant owner
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId, {
+      attributes: ['name'] 
+    });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found'+userId });
+      console.log("I didn't find the user");
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.role !== 'restaurantOwner') {
-      return res.status(403).json({ error: 'User is not authorized to create a restaurant' });
-    }
-
-    // Create a restaurant related to the owner
-    try {
-      const newRestaurant = await Restaurant.create({
-        owner_restaurant: userId,
-        name,
-        email,
-        phone_number,
-        adress,
-        open_hour,
-        close_hour,
-      });
-    } catch (error) {
-      console.error('Sequelize error:', error);
-    } 
-
-    res.status(201).json({ message: 'Restaurant created successfully', restaurant: newRestaurant });
+    res.status(200).json(user);
   } catch (error) {
-    console.error('Error creating restaurant:', error);
-    res.status(500).json({ error: 'Failed to create restaurant' });
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Failed to fetch user' });
   }
 };
 
 
-module.exports = { createUser, getUsers, updateUser, deleteUser, getUserById, createRestaurantIfProductOwner };
+module.exports = { getUsers, updateUser, deleteUser, getUserById, getNameUserById };
 
 

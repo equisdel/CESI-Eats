@@ -27,7 +27,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
 
         const data = await response.json();
 
-        if (data.token) {
+        if (data.token) { 
           localStorage.setItem("token", data.token);
         }
 

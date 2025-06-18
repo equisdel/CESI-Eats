@@ -22,7 +22,8 @@ const MenuItem = sequelize.define('MenuItem', {
   }
 }, {
   tableName: 'Menu-Item', // Optional: matches your SQL table name
-  timestamps: false       // No createdAt/updatedAt columns
+  timestamps: false ,      // No createdAt/updatedAt columns
+  freezeTableName: true ,
 });
 
 module.exports = MenuItem;

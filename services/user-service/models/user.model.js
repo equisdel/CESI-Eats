@@ -40,7 +40,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING, // Cambiar a STRING en lugar de ENUM
     allowNull: false,
     defaultValue: 'user', // Valor predeterminado
-  },
+  }
+}, {
+  tableName: 'User',    
+  timestamps: false ,
+  freezeTableName: true , 
 });
 
 module.exports = User;

@@ -57,7 +57,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
     }
 
     const payload = {
-      type: role,
+      role: role,
       email: form.email,
       password: form.password,
       info: {
@@ -69,6 +69,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
       ...(role === "restaurant" ? { restaurantInfo } : {}),
     };
 
+    console.log("infoUser: ",payload);
     try {
       const response = await fetch("http://localhost:8080/register", {
         method: "POST",

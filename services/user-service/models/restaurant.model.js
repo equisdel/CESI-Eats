@@ -37,6 +37,7 @@ const Restaurant = sequelize.define('Restaurant', {
 }, {
   tableName: 'Restaurant',
   timestamps: false,
+  freezeTableName: true ,
 });
 
 module.exports = Restaurant;

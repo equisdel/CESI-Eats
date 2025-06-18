@@ -25,6 +25,7 @@ const Menu = sequelize.define('Menu', {
   }, 
 }, {
   tableName: 'Menu',
+  freezeTableName: true,
 }
 );
 

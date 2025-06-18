@@ -3,7 +3,7 @@ const { sequelize } = require('../config/db');
 
 const Item = sequelize.define('Item', {
   item_id: {
-    type: DataTypes.UUIDV4,
+    type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4, // Automatically generate a UUID if not provided
     primaryKey: true,
   },
@@ -35,6 +35,7 @@ const Item = sequelize.define('Item', {
 }, {
   tableName: 'Item',
   timestamps: false,
+  freezeTableName: true 
 });
 
 module.exports = Item;

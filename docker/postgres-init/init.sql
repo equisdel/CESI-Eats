@@ -74,7 +74,7 @@ CREATE TABLE "Menu-Item" (
     PRIMARY KEY (menu_id, item_id)
 );
 
--- Table : User
+/*-- Table : User
 CREATE TABLE "User" (
     user_id UUID PRIMARY KEY,
     first_name VARCHAR,
@@ -150,3 +150,4 @@ CREATE TABLE "Menu-Item" (
     item_id VARCHAR REFERENCES Item(item_id) ON DELETE CASCADE,
     PRIMARY KEY (menu_id, item_id)
 );
+*/

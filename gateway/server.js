@@ -1,57 +1,63 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
-const port = 8000;
+const PORT = process.env.PORT || 8000;
+
+// CORS configuration to allow requests from the frontend
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
-const JWT_KEY = process.env.JWT_KEY || "default_key";
-
+// Dynamic service mapping
 const serviceProxyMap = {
   '/api/orders': 'http://order-service:5003',
-  '/api/users': 'http://user-service:5002',
   '/api/menu': 'http://menu-service:5004',
+  '/api/users': 'http://user-service:5002',
   '/api/payments': 'http://payment-service:5005',
   '/api/delivery': 'http://delivery-service:5006',
   '/api/analytics': 'http://analytics-service:5007',
   '/api/components': 'http://component-service:5008',
 };
 
-//require('./src/routes/auth.routes')(app);
+// Middleware for dynamic proxying
+app.use(async (req, res) => {
+  console.log("request", req.path);
+  const servicePath = Object.keys(serviceProxyMap).find(path => req.path.startsWith(path));
+  if (!servicePath) {
+    return res.status(404).json({ error: 'Service not found' });
+  }
 
-// all requests go through this endpoint: proxy
-app.all('/', (req, res) => {
-  // check for token in header
-  console.log("ok")
+  const targetBaseUrl = serviceProxyMap[servicePath];
+  const targetUrl = `${targetBaseUrl}${req.path.replace(servicePath, '')}`;
+
+  try {
+    const response = await axios({
+      method: req.method,
+      url: targetUrl,
+      headers: req.headers,
+      data: req.body,
+      responseType: req.method === 'GET' ? 'stream' : 'json'
+    });
+
+    if (req.method === 'GET' && response.data.pipe) {
+      // To handle stream responses, such as images
+      response.data.pipe(res);
+    } else {
+      res.status(response.status).json(response.data);
+    }
+  } catch (error) {
+    console.error(`Error proxying to ${targetUrl}:`, error.message);
+    res.status(500).json({ error: 'Error forwarding the request' });
+  }
 });
 
-
-
-/*
-// Logger
-app.use((req, res, next) => {
-  console.log(`[Gateway] ${req.method} ${req.url}`);
-  next();
-});
-
-
-// Dictionnaire des routes dynamiques
-
-
-// Proxy dynamique
-Object.entries(serviceProxyMap).forEach(([route, target]) => {
-  app.use(route, createProxyMiddleware({
-    target,
-    changeOrigin: true,
-    pathRewrite: (path, req) => path.replace(route, ''), // retire le préfixe
-  }));
-});
-*/
-
-
-app.listen(port, '0.0.0.0', () => {
-  console.log('Gateway listening on port',port);
+// Start the gateway
+app.listen(PORT, () => {
+  console.log(`🚀 Gateway running dynamically on port ${PORT}`);
 });

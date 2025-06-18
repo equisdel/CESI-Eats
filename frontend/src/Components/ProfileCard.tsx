@@ -19,18 +19,23 @@ export function ProfileCard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("Token encontrado:", token);
     if (!token) return;
 
     const decoded: any = jwtDecode(token);
+    console.log("Decodificado:", decoded);
     const userId = decoded.user_id;
 
-    fetch(`http://localhost:8080/users/${userId}`, {
+    console.log("Voy a hacer fetch",userId)
+
+    fetch(`http://localhost:8000/users/getInfoUser`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log("Datos del usuario obtenidos del backend:", data);
         setUser(data);
         setFormData(data);
       })
