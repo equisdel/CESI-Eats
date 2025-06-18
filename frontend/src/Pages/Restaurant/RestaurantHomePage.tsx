@@ -1,7 +1,6 @@
 import React from 'react';
 import { RestaurantHeader } from '../../Components/RestaurantHeader.tsx';
-import { Sidebar } from '../../Components/RestaurantSidebar-.tsx';
-import { MainContent } from '../../MainContentHome.tsx';
+import { Sidebar } from '../../Components/Sidebar.tsx';
 
 export const RestaurantHomePage: React.FC = () => {
   return (
@@ -15,7 +14,6 @@ export const RestaurantHomePage: React.FC = () => {
           </div>
 
          
-           <MainContent /> 
 
         </div>
       </div>
