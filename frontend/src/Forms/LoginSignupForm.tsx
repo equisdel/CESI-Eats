@@ -38,7 +38,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
         alert("Login successful!");
         
         // Redirect user 
-        window.location.href = "/RestaurantUser"; //REDIRIGIR A LOS DIFERENTES HOMES DEPENDIENDO DEL ROL
+        window.location.href = "/homeUser"; //REDIRIGIR A LOS DIFERENTES HOMES DEPENDIENDO DEL ROL
     } catch (error) {
         console.error("Login error:", error);
 
