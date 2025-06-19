@@ -9,12 +9,12 @@ async function startServer() {
   try {
     await connectDB();
     await sequelize.sync({ alter: true });
-    //await sequelize.sync();
     console.log('Database synchronized.');
 
-    app.use('/users', userRoutes);
+    app.use('/', userRoutes);
+    
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 5002;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

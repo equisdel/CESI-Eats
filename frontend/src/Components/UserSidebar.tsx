@@ -53,7 +53,7 @@ export const Sidebar: React.FC = () => {
 
       <div
         className="px-14 py-3 mt-12 text-base font-bold whitespace-nowrap bg-yellow-400 rounded-xl text-slate-800 max-md:px-5 max-md:mt-10 cursor-pointer hover:bg-yellow-300 transition duration-200 ease-in-out"
-        onClick={() => navigate('/profile')}
+        onClick={() => navigate('/homeUser/profile')}
       >
         PROFILE
       </div>

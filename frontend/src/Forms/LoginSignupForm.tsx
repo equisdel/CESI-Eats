@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, FormEvent } from "react";
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   onSignUp: () => void;
@@ -9,44 +9,65 @@ type Props = {
 export function LoginSignupForm({ onSignUp }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await fetch("http://localhost:8080/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
+      // Login request
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-        if (!response.ok) {
-            // Handle HTTP errors (e.g., 401 Unauthorized)
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to log in.");
-        }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to log in.");
+      }
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (data.token) { 
-          localStorage.setItem("token", data.token);
-        }
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
 
-        // Successfully logged in
-        console.log("Login successful:", data);
+      // Fetch user role
+      const roleResponse = await fetch(`http://localhost:8000/api/users/role/${encodeURIComponent(email)}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${data.token}`, // Asegúrate de pasar el token si es requerido
+        },
+      });
 
-        // Show success feedback
-        alert("Login successful!");
-        
-        // Redirect user 
-        window.location.href = "/homeUser"; //REDIRIGIR A LOS DIFERENTES HOMES DEPENDIENDO DEL ROL
+      if (!roleResponse.ok) {
+        const roleError = await roleResponse.json();
+        throw new Error(roleError.message || "Failed to fetch user role.");
+      }
+
+      const roleData = await roleResponse.json();
+      const role = roleData.role;
+
+      console.log("User role:", role);
+
+      // Redirect based on role
+      if (role === "restaurant") {
+        navigate("/restaurantHomePage");
+      } else if (role === "client") {
+        navigate("/homeUser");
+      } else if (role === "delivery") {
+        navigate("/DeliveryPage");
+      } else if (role === "technical") {
+        navigate("/homeTechnical");
+      } else {
+        throw new Error("Unknown role. Contact support.");
+      }
     } catch (error) {
-        console.error("Login error:", error);
-
-        // Show error feedback to the user
-        alert(error instanceof Error ? error.message : "An unexpected error occurred.");
+      console.error("Login error:", error);
+      alert(error instanceof Error ? error.message : "An unexpected error occurred.");
     }
-};
-
+  };
 
   return (
     <section className="absolute shrink-0 h-[231px] left-[-38px] top-[385px] w-[598px] max-md:top-80 max-md:left-[5%] max-md:w-[90%] max-sm:left-[2.5%] max-sm:top-[260px] max-sm:w-[95%]">
@@ -77,7 +98,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
           className="absolute shrink-0 h-10 bg-orange-50 rounded-xl left-[140px] top-[43px] w-[431px] border-none px-3"
           placeholder="Enter your email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
@@ -85,7 +106,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
           className="absolute shrink-0 h-10 bg-orange-50 rounded-xl left-[140px] top-[119px] w-[431px] border-none px-3"
           placeholder="Enter your password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <button

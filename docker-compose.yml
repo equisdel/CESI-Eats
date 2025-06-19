@@ -57,7 +57,7 @@ services:
     container_name: user-service
     environment:
       - PORT=5002
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_users
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
@@ -73,7 +73,6 @@ services:
     networks:
       - cesi-network
     depends_on:
-      - mongo
       - postgres
 
   # 🍽️ MENU SERVICE
@@ -82,7 +81,7 @@ services:
     container_name: menu-service
     environment:
       - PORT=5004
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_menus
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
@@ -94,7 +93,7 @@ services:
     container_name: payment-service
     environment:
       - PORT=5005
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_payments
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
@@ -106,7 +105,7 @@ services:
     container_name: delivery-service
     environment:
       - PORT=5006
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_deliveries
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
@@ -118,7 +117,7 @@ services:
     container_name: analytics-service
     environment:
       - PORT=5007
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_analytics
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:
@@ -130,7 +129,7 @@ services:
     container_name: component-service
     environment:
       - PORT=5008
-      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_components
+      - DATABASE_URL=postgres://user:password@postgres:5432/cesi_global
     depends_on:
       - postgres
     networks:

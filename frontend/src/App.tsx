@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<EndUserWelcomePage/>} />
         <Route path="/create-account" element={<EndUserWelcomePage />} />
-        <Route path="/home/profile" element={<UserSettingsProfile/>} />
+        <Route path="/homeUser/profile" element={<UserSettingsProfile/>} />
         <Route path="/homeUser" element={<UserHomePage/>} />
 
       </Routes>
