@@ -9,10 +9,10 @@ interface MainContentProps {
 }
 
 export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
-  const [popularMenus, setPopularMenus] = useState([]);
+  const [menus, setMenus] = useState([]);
 
   useEffect(() => {
-    fetchPopularMenus().then(setPopularMenus);
+    fetchMenus().then(setMenus);
   }, []);
 
   return (
@@ -40,13 +40,13 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
         <FoodSection
           title="MOST POPULAR"
           showMostPopular={true}
-          menus={popularMenus}
+          menus={menus}
           onAddToCart={onAddToCart}
         />
         <FoodSection
-          title="Nombre de restaurante"
+          title="delfina"
           showMostPopular={true}
-          menus={popularMenus}
+          menus={menus}
           onAddToCart={onAddToCart}
         />
       </div>
@@ -54,11 +54,10 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
   );
 };
 
-const fetchPopularMenus = async () => {
+// ✅ Appel réel vers le Gateway en mode dev
+const fetchMenus = async () => {
   try {
-    const response = await fetch("http://localhost:8000/api/menu/menu/");
-    //const response = await fetch("http://localhost:5004/menu/");
-    console.log(response)
+    const response = await fetch("http://localhost:8000/api/menus/menu/");
     const data = await response.json();
     return data;
   } catch (err) {

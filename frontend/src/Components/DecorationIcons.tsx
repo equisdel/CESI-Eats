@@ -82,3 +82,4 @@ export function DecorationIcons({ selectedRole, setSelectedRole }: Props) {
     </aside>
   );
 }
+

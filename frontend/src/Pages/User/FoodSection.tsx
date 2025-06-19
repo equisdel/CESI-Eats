@@ -1,21 +1,17 @@
 "use client";
 import * as React from "react";
 
-
-
-
 interface FoodCardProps {
   imageUrl: string;
   title: string;
   hasWhiteBackground?: boolean;
-  onAddToCart: () => void; // ✅ AJOUT
-
+  onAddToCart: () => void;
 }
 
 interface FoodSectionProps {
   title: string;
   showMostPopular?: boolean;
-  menus: any[]; // 👈 On reçoit les menus ici
+  menus: any[];
   onAddToCart: (menu: any) => void;
 }
 
@@ -26,7 +22,7 @@ export const FoodCard: React.FC<FoodCardProps> = ({
   onAddToCart,
 }) => {
   const handleAddToCart = () => {
-    onAddToCart(); // Appelle bien la fonction transmise par FoodSection → MainContent → UserHomePage
+    onAddToCart();
   };
 
   const handleViewDetails = () => alert(`Viewing details for ${title}`);
@@ -36,7 +32,6 @@ export const FoodCard: React.FC<FoodCardProps> = ({
       <div className={`overflow-hidden rounded-xl ${hasWhiteBackground ? "bg-white" : ""}`}>
         <img
           src={imageUrl}
-          alt={title}
           className="object-cover aspect-[1.2] w-[200px] h-[150px]"
         />
       </div>
@@ -48,7 +43,7 @@ export const FoodCard: React.FC<FoodCardProps> = ({
             onClick={handleAddToCart}
             className="text-sm font-semibold bg-blue-600 text-white rounded-md px-2 py-1 hover:bg-blue-700"
           >
-            + Add to Cartee
+            + Add to Cart
           </button>
           <button onClick={handleViewDetails} aria-label="View">
             <img
@@ -63,16 +58,25 @@ export const FoodCard: React.FC<FoodCardProps> = ({
   );
 };
 
-
-export const FoodSection: React.FC<FoodSectionProps> = ({ title, showMostPopular = false, menus, onAddToCart }) => {
+export const FoodSection: React.FC<FoodSectionProps> = ({
+  title,
+  showMostPopular = false,
+  menus,
+  onAddToCart,
+}) => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => scrollRef.current?.scrollBy({ left: -700, behavior: "smooth" });
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 700, behavior: "smooth" });
+menus.map((menu, i) => {
+  console.log("🧾 Menu reçu :", menu);
 
-  // 🔁 Dynamique : si on est sur un port autre que 80, utilise http://localhost:8000
-  const isDev = window.location.port !== "80";
-  const baseUrl = isDev ? "http://localhost:8000" : "";
+});
+
+  const baseUrl = window.location.origin.includes("localhost")
+    ? "http://localhost:8000"
+    : window.location.origin;
+    
 
   return (
     <section className="mt-10 max-md:mt-10">
@@ -91,11 +95,12 @@ export const FoodSection: React.FC<FoodSectionProps> = ({ title, showMostPopular
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide"
           style={{ maxWidth: "1280px", scrollBehavior: "smooth", scrollbarWidth: "none" }}
         >
-          {menus.map((menu, i) => (
+{Array.isArray(menus) &&
+  menus.map((menu, i) => (
             <div key={menu.menu_id} className="shrink-0">
               <FoodCard
-                title={menu.Restaurant?.name || 'Menu'}
-imageUrl={`http://localhost/images/${menu.photo}`}
+                title={menu.menu_name || "Menu"}
+                imageUrl={`${baseUrl}/api/menus/images/${menu.menu_photo}`} // ✅ via Gateway
                 hasWhiteBackground={i % 2 === 0}
                 onAddToCart={() => onAddToCart(menu)}
               />

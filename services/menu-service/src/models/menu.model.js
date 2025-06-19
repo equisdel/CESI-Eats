@@ -4,29 +4,39 @@ const { sequelize } = require('../config/db');
 const Menu = sequelize.define('Menu', {
   menu_id: {
     type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4, // Automatically generate a UUID if not provided
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
   restaurant_id: {
     type: DataTypes.UUID,
-    allowNull: false, // Each menu must belong to a restaurant
+    allowNull: false,
   },
   menu_name: {
     type: DataTypes.STRING,
-    allowNull: false, // Menu name is required
+    allowNull: false,
   },
   menu_description: {
     type: DataTypes.STRING,
-    allowNull: true, // Optional field
+    allowNull: true,
+  },
+  menu_price: {                    // ✅ AJOUT ICI
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0.00
+  },
+  menu_photo: {
+    type: DataTypes.STRING, // 
+    allowNull: true,
   },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   }, 
 }, {
-  tableName: 'Menu',
-  freezeTableName: true,
-}
-);
+  tableName: 'menu',
+  freezeTableName: false,
+  timestamps: false
+});
+
 
 module.exports = Menu;

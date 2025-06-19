@@ -1,5 +1,7 @@
 require("dotenv").config({path: "../.env"});
 const express = require('express');
+const path = require('path');
+
 const menuRouter = require('./src/routes/menu.routes.js');
 const itemRouter = require('./src/routes/item.routes.js');
 const {sequelize, connectDB} = require("./src/config/db.js")
@@ -15,6 +17,7 @@ app.use(express.json())
 app.use(cors())
 app.use('/menu', menuRouter);   // All /menu requests go to menuRouter
 app.use('/item', itemRouter);  // All /items requests go to itemRouter
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 async function startServer() {
 

@@ -16,7 +16,7 @@ const MenuItem = sequelize.define('MenuItem', {
     allowNull: false,
     primaryKey: true,
     references: {
-      model: 'Item',
+      model: 'item',
       key: 'item_id'
     }
   }

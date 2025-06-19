@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import logo from '../assets/logo_cesi_eats.png';
+import profile from '../assets/userIcon.png';
+import panier from '../assets/panier.png'; // 🛒 ton icône panier
 
 interface UserHeaderProps {
   restaurantName?: string;
@@ -33,7 +36,7 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
       
       {/* Logo */}
       <div className="flex items-center gap-2">
-        <img src="../Images/CesiEatsLogo.png" alt="CESI Eats Logo" className="w-[100px] h-auto object-contain" />
+        <img src={logo} alt="CESI Eats Logo" className="w-[100px] h-auto object-contain" />
       </div>
 
       {/* Search */}
@@ -51,7 +54,7 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
         <span className="grow self-stretch my-auto">{restaurantName}</span>
 
         <button onClick={onProfileClick} aria-label="Profile">
-          <img src="../Images/userIcon.png" alt="Profile" className="w-[60px] aspect-square object-contain" />
+          <img src={profile} alt="Profile" className="w-[60px] aspect-square object-contain" />
         </button>
 
         {/* Notification */}
@@ -84,7 +87,7 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
         {/* 🛒 Panier avec clic déclencheur */}
         <div className="relative">
           <button onClick={onCartClick} className="relative">
-  <img src="../Images/panier.png" alt="Panier" className="w-9 cursor-pointer" />
+  <img src={panier} alt="Panier" className="w-9 cursor-pointer" />
   {cartCount > 0 && (
     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
       {cartCount}

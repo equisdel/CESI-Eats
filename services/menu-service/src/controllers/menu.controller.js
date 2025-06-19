@@ -107,7 +107,7 @@ const deleteMenu = async (req,res) => {
 const findMenus = async (req,res) => {
 
     console.log("xd")
-    const { menu_id, restaurant_id, limit, order, offset, items } = req.query
+    const { menu_id, restaurant_id, limit, order, offset, items,photo } = req.query
 
     try {
         const where = {};

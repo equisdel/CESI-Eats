@@ -1,0 +1,6 @@
+{
+  "client_id": "00000000-0000-0000-0000-000000000001",
+  "delivery_address": "12 rue ABC",
+  "total_price": 42,
+  "menus": ["menu-r1-1", "menu-r2-3"]
+}

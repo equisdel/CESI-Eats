@@ -11,7 +11,7 @@ const Item = sequelize.define('Item', {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
-      model: 'Restaurant',
+      model: 'restaurant',
       key: 'restaurant_id',
     },
     onDelete: 'CASCADE',
