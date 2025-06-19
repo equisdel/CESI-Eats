@@ -51,7 +51,7 @@ app.use(async (req, res) => {
 
   const targetBaseUrl = serviceProxyMap[servicePath];
   const targetUrl = `${targetBaseUrl}${req.path.replace(servicePath, '')}`;
-
+  console.log("path before try: ", targetUrl);
   try {
     const response = await axios({
       method: req.method,
