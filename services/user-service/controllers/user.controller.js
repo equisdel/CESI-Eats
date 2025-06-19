@@ -208,6 +208,37 @@ const getRoleByEmail = async (req, res) => {
   }
 };
 
+///------------------------------------------------------- GET NAME RESTAURANT BY EMAIL --------------------------------------------------------------------------
+const getNameRestaurant = async (req, res) => {
+  const userEmail = decodeURIComponent(req.params.email);
+
+  try {
+    const user = await User.findOne({
+      where: { email: userEmail },
+      attributes: ['user_id'], 
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Search the restaurant associate to the restaurant owner
+    const restaurant = await Restaurant.findOne({
+      where: { owner_restaurant: user.user_id },
+      attributes: ['name'], 
+    });
+
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found for this user' });
+    }
+
+    res.status(200).json({ name: restaurant.name });
+  } catch (error) {
+    console.error('Error fetching restaurant ID:', error);
+    res.status(500).json({ error: 'Failed to fetch restaurant name' });
+  }
+};
+
 module.exports = {  
   getUsers, 
   updateUser, 
@@ -217,7 +248,8 @@ module.exports = {
   getNameUser, 
   getUserId, 
   getRestaurantId,
-  getRoleByEmail
+  getRoleByEmail,
+  getNameRestaurant
 };
 
 

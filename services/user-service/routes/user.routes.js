@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUsers, updateUser, deleteUser, getUserById, getUserByEmail, getNameUser, getUserId, getRestaurantId, getRoleByEmail} = require('../controllers/user.controller');
+const { getUsers, updateUser, deleteUser, getUserById, getUserByEmail, getNameUser, getUserId, getRestaurantId, getRoleByEmail, getNameRestaurant} = require('../controllers/user.controller');
 
 const router = express.Router();
 
@@ -9,6 +9,7 @@ router.delete('/:id', deleteUser);
 router.get('/getId/:email', getUserId);
 router.get('/getRestaurantId/:email', getRestaurantId); // //:localhost:8000/api/users/getRestaurantId/:email
 router.get('/name/:email', getNameUser);
+router.get('/nameRestaurant/:email', getNameRestaurant);
 router.get('/email/:email', getUserByEmail);
 router.get('/role/:email', getRoleByEmail); // //:localhost:8000/api/users/role/:email
 router.get('/', (req, res) => {
