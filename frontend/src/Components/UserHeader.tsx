@@ -16,6 +16,7 @@ interface UserHeaderProps {
 }
 
 export const UserHeader: React.FC<UserHeaderProps> = ({
+  
   restaurantName = "End-User's Name",
   onSearchClick,
   onProfileClick,

@@ -53,11 +53,11 @@ export function LoginSignupForm({ onSignUp }: Props) {
 
       // Redirect based on role
       if (role === "restaurant") {
-        navigate("/restaurantHomePage");
+        navigate("/RestaurantUser");
       } else if (role === "client") {
         navigate("/homeUser");
       } else if (role === "delivery") {
-        navigate("/DeliveryPage");
+        navigate("/DeliveryUser");
       } else if (role === "technical") {
         navigate("/homeTechnical");
       } else {

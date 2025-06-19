@@ -75,4 +75,3 @@ export const Sidebar: React.FC = () => {
     </nav>
   );
 };
-

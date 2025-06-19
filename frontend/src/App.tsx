@@ -4,7 +4,7 @@ import UserSettingsProfile from './Pages/Users/UserSettingsProfile.tsx'
 import UserHomePage from './Pages/User/UserHomePage.tsx'
 import DeliverHomePage from './Pages/Delivery/DeliveryHomePage.tsx';
 import RestaurantOrderPage from './Pages/Restaurant/RestaurantOrderPage.tsx';
-import RestaurantHomePage from './Pages/Restaurant/RestaurantHomePage.tsx';
+import RestaurantHomePage from './Pages/Restaurant/MenuPage.tsx';
 
 
 function App() {
