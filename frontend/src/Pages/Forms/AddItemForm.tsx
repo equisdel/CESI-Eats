@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ItemImageUpload } from './ItemImageUpload.tsx';
 import { ItemDetails } from './ItemDetails.tsx';
 import { ItemIngredients } from './ItemIngredients.tsx';
 import { FormActions } from './FormActions.tsx';
+
+const port = 8000; // gateway
 
 interface FormData {
   name: string;
@@ -12,16 +14,45 @@ interface FormData {
   imageUrl: string;
 }
 
-
-
-export const AddItemForm: React.FC = () => {
+export const AddItemForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [formData, setFormData] = useState<FormData>({
-    name: 'Beef Empanada',
+    name: '',
     price: '',
-    description: 'Savor our delicious Beef Empanada, featuring a golden, flaky pastry filled with seasoned ground beef, onions, and spices.',
-    ingredients: 'Beef, onions, spices (cumin, paprika, oregano), hard-boiled eggs, olives.',
+    description: '',
+    ingredients: '',
     imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/9d9175e660762d60e26e190295bc5906ded44485?placeholderIfAbsent=true&apiKey=098edc85fcc944caaa83d6d7b30f4a5b'
   });
+
+  const [restaurantId, setRestaurantId] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  // Fetch restaurant ID on component mount
+  useEffect(() => {
+    const fetchRestaurantId = async () => {
+      try {
+        // Try to get restaurant_id from localStorage first
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        let restaurant_id = userData.restaurant_id;
+        
+        // If not in localStorage, fetch from API
+        if (!restaurant_id) {
+          const res = await fetch('http://localhost:${port}/api/getRestaurantId/:email');
+          if (!res.ok) throw new Error("Failed to fetch restaurant ID");
+          const data = await res.json();
+          restaurant_id = data.restaurant_id;
+        }
+        
+        setRestaurantId(restaurant_id);
+        
+      } catch (err) {
+        console.error("Error fetching restaurant ID:", err);
+        setError("Failed to load restaurant data");
+      }
+    };
+
+    fetchRestaurantId();
+  }, []);
 
   const handleNameChange = (name: string) => {
     setFormData(prev => ({ ...prev, name }));
@@ -44,7 +75,7 @@ export const AddItemForm: React.FC = () => {
   };
 
   const handleCancel = () => {
-    // Reset form or close modal
+    // Reset form
     setFormData({
       name: '',
       price: '',
@@ -52,40 +83,75 @@ export const AddItemForm: React.FC = () => {
       ingredients: '',
       imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/9d9175e660762d60e26e190295bc5906ded44485?placeholderIfAbsent=true&apiKey=098edc85fcc944caaa83d6d7b30f4a5b'
     });
+    setError("");
+    onClose();
   };
 
-
   const handleAdd = async () => {
-    localStorage.setItem('userData', JSON.stringify({ restaurant_id: 123 }));
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const restaurant_id = userData.restaurant_id; 
+    // Validation
+    if (!formData.name.trim()) {
+      setError("Please enter a valid item name");
+      return;
+    }
 
-    const payload = {
-      formData,
-      restaurant_id,
-    };
+    if (!formData.price.trim()) {
+      setError("Please enter a valid price");
+      return;
+    }
 
-    console.log('Adding item:', formData);
-      try {
-        const response = await fetch('http://localhost:5004/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+    if (!restaurantId) {
+      setError("Restaurant ID not found. Please try refreshing the page.");
+      return;
+    }
 
-        if (!response.ok) {
-          throw new Error('Error al agregar el item');
-        }
+    try {
+      setLoading(true);
+      setError("");
 
-        const data = await response.json();
-        console.log('Item agregado:', data);
-        // Aquí puedes limpiar el formulario o mostrar un mensaje de éxito
-      } catch (error) {
-        console.error('Error:', error);
-        // Aquí puedes mostrar un mensaje de error al usuario
+      // Prepare the payload with restaurant_id in the body
+      const payload = {
+        name: formData.name,
+        price: formData.price,
+        description: formData.description,
+        ingredients: formData.ingredients,
+        imageUrl: formData.imageUrl,
+        restaurant_id: restaurantId
+      };
+
+      console.log('Adding item:', payload);
+
+      const response = await fetch('http://localhost:${port}/api/menus/item', {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error adding item");
       }
+
+      const data = await response.json();
+      console.log('Item added successfully:', data);
+      
+      // Success - close the form and reset only on success
+      setFormData({
+        name: '',
+        price: '',
+        description: '',
+        ingredients: '',
+        imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/9d9175e660762d60e26e190295bc5906ded44485?placeholderIfAbsent=true&apiKey=098edc85fcc944caaa83d6d7b30f4a5b'
+      });
+      onClose();
+      
+    } catch (error) {
+      console.error('Error adding item:', error);
+      setError(error instanceof Error ? error.message : "Failed to add item");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -94,6 +160,12 @@ export const AddItemForm: React.FC = () => {
         <header className="self-center text-4xl leading-none text-slate-800 mb-7">
           ADD A NEW ITEM
         </header>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
         <div className="flex z-10 gap-5 justify-between text-base leading-10 text-slate-800">
           <ItemImageUpload
@@ -118,10 +190,17 @@ export const AddItemForm: React.FC = () => {
         <FormActions
           onCancel={handleCancel}
           onAdd={handleAdd}
+          //disabled={loading}
         />
+        
+        {loading && (
+          <div className="text-center text-slate-800 mt-2">
+            Adding item...
+          </div>
+        )}
       </form>
     </main>
   );
 };
 
-export default AddItemForm;
+export default AddItemForm;

@@ -38,13 +38,13 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
 
       <div className="flex flex-col items-start pl-11 w-full max-md:pl-5 max-md:max-w-full">
         <FoodSection
-          title="MOST POPULAR"
+          title="MOST POPULAR "
           showMostPopular={true}
           menus={menus}
           onAddToCart={onAddToCart}
         />
         <FoodSection
-          title="delfina"
+          title="ALL MENUS"
           showMostPopular={true}
           menus={menus}
           onAddToCart={onAddToCart}

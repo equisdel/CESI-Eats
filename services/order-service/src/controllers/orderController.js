@@ -13,7 +13,7 @@ const createOrder = async (req, res) => {
       delivery_address,
       total_price
     });
-
+w
     // Étape 2 : Associer les menus (OrderMenu)
     if (menus && menus.length > 0) {
       const orderMenuEntries = menus.map(menu_id => ({

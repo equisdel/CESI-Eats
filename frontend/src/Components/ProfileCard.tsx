@@ -7,7 +7,7 @@ interface UserData {
   last_name: string;
   email: string;
   phone_number: string;
-  birthday_date: string;
+  birthday_date: string; // Formatted as "YYYY-MM-DD"
   created_at?: string;
   avatar?: string;
 }
@@ -19,23 +19,27 @@ export function ProfileCard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Token encontrado:", token);
-    if (!token) return;
+    if (!token) {
+      console.error("No token found in localStorage.");
+      return;
+    }
 
     const decoded: any = jwtDecode(token);
-    console.log("Decodificado:", decoded);
-    const userId = decoded.user_id;
+    const emailUser = encodeURIComponent(decoded.email);
 
-    console.log("Voy a hacer fetch",userId)
-
-    fetch(`http://localhost:8000/users/getInfoUser`, {
+    fetch(`http://localhost:8000/api/users/email/${emailUser}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Datos del usuario obtenidos del backend:", data);
+        if (data.birthday_date) {
+          const date = new Date(data.birthday_date);
+          data.birthday_date = isNaN(date.getTime())
+            ? ""
+            : date.toISOString().split("T")[0]; // Format to "YYYY-MM-DD"
+        }
         setUser(data);
         setFormData(data);
       })
@@ -49,24 +53,51 @@ export function ProfileCard() {
   };
 
   const handleSaveChanges = () => {
-    const token = localStorage.getItem("token");
-    if (!token || !formData) return;
+  if (!formData) return;
 
-    fetch(`http://localhost:8080/users/${formData.user_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then((updatedUser) => {
-        setUser(updatedUser);
-        setIsEditing(false);
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const correctedDate = new Date(formData.birthday_date);
+  if (isNaN(correctedDate.getTime())) {
+    alert("Invalid date format. Please select a valid date.");
+    return;
+  }
+
+  const formattedDate = correctedDate.toISOString().split("T")[0];
+  const updatedFormData = { ...formData, birthday_date: formattedDate };
+
+  fetch(`http://localhost:8000/api/users/update/${formData.user_id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedFormData),
+  })
+    .then((res) => res.json())
+    .then(() => {
+      // Volver a cargar la información del usuario
+      fetch(`http://localhost:8000/api/users/email/${encodeURIComponent(formData.email)}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .catch((err) => console.error("Error updating user data:", err));
-  };
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.birthday_date) {
+            const date = new Date(data.birthday_date);
+            data.birthday_date = isNaN(date.getTime())
+              ? ""
+              : date.toISOString().split("T")[0];
+          }
+          setUser(data);
+          setIsEditing(false);
+        });
+    })
+    .catch((err) => console.error("Error updating user data:", err));
+};
+
 
   if (!user || !formData) return <div>Loading...</div>;
 
@@ -112,7 +143,7 @@ export function ProfileCard() {
               <input
                 type="date"
                 name="birthday_date"
-                value={formData.birthday_date}
+                value={formData.birthday_date || ""}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
               />
@@ -156,7 +187,13 @@ export function ProfileCard() {
                 </div>
                 <h3 className="self-start mt-10 text-slate-800">BIRTHDAY</h3>
                 <p className="self-start mt-5 text-orange-50">
-                  {user.birthday_date}
+                  {user.birthday_date
+                    ? new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }).format(new Date(user.birthday_date))
+                    : "No birthday date available"}
                 </p>
                 <div className="flex flex-col items-start pr-16 pl-1.5 mt-5 max-md:pr-5">
                   <h3 className="text-slate-800">PHONE NUMBER</h3>
@@ -167,7 +204,10 @@ export function ProfileCard() {
             <div className="ml-5 w-[44%] max-md:ml-0 max-md:w-full">
               <button
                 className="flex gap-4 py-2 pr-2.5 pl-6 mt-7 text-2xl font-bold leading-relaxed rounded-xl bg-zinc-300 text-slate-800 max-md:pl-5 w-full"
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setFormData(user);
+                  setIsEditing(true);
+                }}
               >
                 Edit Profile
               </button>

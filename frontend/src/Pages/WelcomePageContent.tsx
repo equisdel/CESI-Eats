@@ -1,8 +1,8 @@
 import React from "react";
-import { HeroSection } from "../../Components/HeroSection.tsx";
-import { DecorationIcons } from "../../Components/DecorationIcons.tsx";
-import { LoginSignupForm } from "../../Forms/LoginSignupForm.tsx";
-import { CreateAccountForm } from "../../Forms/CreateAcountForm/CreateAccountForm.tsx";
+import { HeroSection } from "../Components/HeroSection.tsx";
+import { DecorationIcons } from "../Components/DecorationIcons.tsx";
+import { LoginSignupForm } from "../Forms/LoginSignupForm.tsx";
+import { CreateAccountForm } from "../Forms/CreateAcountForm/CreateAccountForm.tsx";
 
 function WelcomePageContent() {
   const [role, setRole] = React.useState("");

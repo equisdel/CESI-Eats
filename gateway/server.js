@@ -14,10 +14,10 @@ app.use(cors({
 
 app.use(express.json());
 
-// 🖼️ Optionnel : sert les images locales (pas dans ton cas Docker)
+//  sert les images locales (pas dans ton cas Docker)
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
-// ✅ Route spéciale pour servir les images depuis le menu-service
+//  Route spéciale pour servir les images depuis le menu-service
 app.use('/api/menus/images', async (req, res) => {
   try {
     const imageUrl = `http://menu-service:5004/images${req.url}`;

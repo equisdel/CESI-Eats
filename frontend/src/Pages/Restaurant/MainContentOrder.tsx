@@ -147,7 +147,7 @@ export const MainContent: React.FC = () => {
   useEffect(() => {
     fetchOrders();
     const interval = setInterval(fetchOrders, 5000);
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); //Ceci est un nettoyage automatique  du (MainContent) pour éviter tourner inutilement si l'utilisateur quitte la page.
   }, []);
 
   const handleAccept = async (orderId: string) => {

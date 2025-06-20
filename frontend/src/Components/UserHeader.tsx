@@ -1,39 +1,54 @@
-import React, { useState } from "react";
-import logo from '../assets/logo_cesi_eats.png';
-import profile from '../assets/userIcon.png';
-import panier from '../assets/panier.png'; // 🛒 ton icône panier
+import React, { useState, useEffect } from "react";
+import logo from "../assets/logo_cesi_eats.png";
+import profile from "../assets/userIcon.png";
+import panier from "../assets/panier.png"; // 🛒 ton icône panier
+import { jwtDecode } from "jwt-decode";
 
 interface UserHeaderProps {
-  restaurantName?: string;
   onSearchClick?: () => void;
   onProfileClick?: () => void;
   onMenuClick?: () => void;
-
-  // ✅ Nouvelle prop pour ouvrir le panier
-  onCartClick?: () => void;
-    cartCount?: number; // ✅ NOUVEAU
-
+  onCartClick?: () => void; // ✅ Nouvelle prop pour ouvrir le panier
+  cartCount?: number; // ✅ NOUVEAU
 }
 
 export const UserHeader: React.FC<UserHeaderProps> = ({
-  restaurantName = "End-User's Name",
   onSearchClick,
   onProfileClick,
   onMenuClick,
-  onCartClick, // ✅ Reçu ici
-  cartCount = 0, // ✅ valeur par défaut
-
-  
+  onCartClick,
+  cartCount = 0,
+  email,
 }) => {
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [restaurantName, setRestaurantName] = useState("Loading...");
 
-  const toggleNotifications = () => {
-    setShowNotifications((prev) => !prev);
-  };
+  useEffect(() => {
+    const fetchRestaurantName = async () => {
+      const token = localStorage.getItem("token");
+      const decoded: any = jwtDecode(token);
+      const emailUser = encodeURIComponent(decoded.email);
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/users/name/${emailUser}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch the user name.");
+        }
+
+        const data = await response.json();
+        setRestaurantName(data.name || "Unknown User"); 
+      } catch (error) {
+        console.error("Error fetching restaurant name:", error);
+        setRestaurantName("Unknown User");
+      }
+    };
+
+    fetchRestaurantName();
+  }, [email]);
 
   return (
     <header className="flex justify-between items-center px-6 py-3 w-full font-bold bg-[#ACA7AA] text-white relative">
-      
       {/* Logo */}
       <div className="flex items-center gap-2">
         <img src={logo} alt="CESI Eats Logo" className="w-[100px] h-auto object-contain" />
@@ -46,7 +61,9 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
           placeholder="Search"
           className="flex-1 bg-transparent outline-none placeholder:text-gray-500"
         />
-        <button onClick={onSearchClick} aria-label="Search">🔍</button>
+        <button onClick={onSearchClick} aria-label="Search">
+          🔍
+        </button>
       </div>
 
       {/* Right side */}
@@ -59,46 +76,25 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
 
         {/* Notification */}
         <div className="relative">
-          <button onClick={toggleNotifications} aria-label="Toggle notifications">
+          <button onClick={() => setShowNotifications((prev) => !prev)} aria-label="Toggle notifications">
             <img
               src="https://cdn.builder.io/api/v1/image/assets/dc2319f83b3a42a8a7d7e21e5b5256f0/1da018d683531156775e9c38aa2586a0d93ce164?placeholderIfAbsent=true"
               alt="Notification bell"
               className="w-9 object-contain"
             />
           </button>
-
-          {showNotifications && (
-            <div className="absolute right-0 mt-2 w-64 bg-white text-black rounded shadow-lg p-4 z-50">
-              <h4 className="text-sm font-semibold mb-2">Notifications</h4>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <span className="text-yellow-500">⚠️</span>
-                  <span>Une nouvelle commande a été passée.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600">✅</span>
-                  <span>Commande #4563 livrée avec succès.</span>
-                </li>
-              </ul>
-            </div>
-          )}
         </div>
 
         {/* 🛒 Panier avec clic déclencheur */}
         <div className="relative">
           <button onClick={onCartClick} className="relative">
-  <img src={panier} alt="Panier" className="w-9 cursor-pointer" />
-  {cartCount > 0 && (
-    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-      {cartCount}
-    </span>
-  )}
-</button>
-          {cartCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-              {cartCount}
-            </span>
-          )}
+            <img src={panier} alt="Panier" className="w-9 cursor-pointer" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
+                {cartCount}
+              </span>
+            )}
+          </button>
         </div>
       </div>
     </header>
