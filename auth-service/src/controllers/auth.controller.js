@@ -101,8 +101,25 @@ const login = async (req, res) => {  // Changed to const definition
     try {
         const user = await getUser(email);
         if (user && bcrypt.compareSync(password, user.password)) {
-            const token = jwt.sign({ email: user.email }, JWT_ACCESS_KEY, { expiresIn: JWT_TOKEN_LIFETIME });
-            return res.status(200).json({ token });
+            if(user.role == "restaurant"){
+                const restaurant = await Restaurant.findOne({
+                    where: { owner_restaurant: user.user_id },
+                    attributes: ['restaurant_id'], 
+                });
+
+                if (!restaurant) {
+                    return res.status(404).json({ error: 'No restaurant found for this user' });
+                }
+
+                const token = jwt.sign(
+                    { user_id: user.user_id, restaurant_id: restaurant.restaurant_id }, JWT_ACCESS_KEY,{ expiresIn: JWT_TOKEN_LIFETIME });
+
+                return res.status(200).json({ token });
+            } else {
+                const token = jwt.sign({ user_id: user.user_id }, JWT_ACCESS_KEY, { expiresIn: JWT_TOKEN_LIFETIME });
+                return res.status(200).json({ token });
+            }
+            
         } else {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
