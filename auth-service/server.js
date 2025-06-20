@@ -7,6 +7,11 @@ const port = process.env.PORT || 5001;
 
 app.use(express.json())
 
+app.use((req,res, next) => {
+  console.log("Request received:",req.path)
+  next()
+})
+
 require('./src/routes/auth.routes')(app);
 
 app.use((err, req, res, next) => {

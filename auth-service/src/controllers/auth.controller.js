@@ -24,8 +24,9 @@ const authenticate = async (req, res) => {
 
         if (authHeader && authHeader.startsWith("Bearer ")) {
             let token = authHeader.substring(7, authHeader.length)
-            if (jwt.verify(token,JWT_ACCESS_KEY,{algorithms: ["HS256"]})) {
-                return res.status(200).json({"msg": "Valid Token"})
+            const payload = jwt.verify(token,JWT_ACCESS_KEY,{algorithms: ["HS256"]})
+            if (payload) {
+                return res.status(200).json({"msg": "Valid Token", payload: payload })
             } else {
                 return res.status(401).json({"msg": "Invalid Token"})
             }
@@ -101,7 +102,7 @@ const login = async (req, res) => {  // Changed to const definition
     try {
         const user = await getUser(email);
         if (user && bcrypt.compareSync(password, user.password)) {
-            if(user.role == "restaurant"){
+            if (user.role == "restaurant"){
                 const restaurant = await Restaurant.findOne({
                     where: { owner_restaurant: user.user_id },
                     attributes: ['restaurant_id'], 
