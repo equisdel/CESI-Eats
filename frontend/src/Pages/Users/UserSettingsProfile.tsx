@@ -7,11 +7,18 @@ import { OrdersSection } from "../../Components/OrdersSection.tsx";
 
 export default function UserSettingsProfile() {
   return (
-    <div className="flex overflow-hidden flex-col bg-orange-50">
+
+<div className="overflow-hidden bg-orange-50">
       <UserHeader />
-      <div className="flex flex-wrap gap-3.5 self-start">
-        <Sidebar />
-        <main className="grow shrink-0 self-start mt-3 basis-0 w-fit max-md:max-w-full">
+
+      <div className="w-full max-w-[1417px] max-md:max-w-full">
+        <div className="flex gap-5 max-md:flex-col max-md:">
+          <div className="w-[17%] max-md:ml-0 max-md:w-full">
+            <Sidebar />
+          </div>
+
+         
+         <main className="grow shrink-0 self-start mt-3 basis-0 w-fit max-md:max-w-full">
           <div className="max-md:mr-2.5 max-md:max-w-full">
             <div className="flex gap-5 max-md:flex-col max-md:">
               <div className="w-9/12 max-md:ml-0 max-md:w-full">
@@ -34,7 +41,13 @@ export default function UserSettingsProfile() {
           </div>
           <OrdersSection />
         </main>
+        </div>
       </div>
     </div>
+
+
+
+
+
   );
 }
