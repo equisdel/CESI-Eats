@@ -2,9 +2,9 @@ import * as React from "react";
 import { QuickActions } from "./QuickActions.tsx";
 import { FoodSection } from "./FoodSection.tsx";
 import { useEffect, useState } from "react";
-import { AddItemForm } from '../Forms/AddItemForm.tsx';
-import AddMenuForm from "../Forms/AddMenuForm.tsx";
-import { Modal } from "../Forms/Modal.tsx";
+import { AddItemForm } from '../../Forms/Menu/AddItemForm.tsx';
+import AddMenuForm from "../../Forms/Menu/AddMenuForm.tsx";
+import { Modal } from "../../Forms/Menu/Modal.tsx";
 
 interface MainContentProps {
   onAddToCart: (menu: any) => void;

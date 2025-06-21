@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { UserHeader } from "../../Components/UserHeader.tsx";
-import { Sidebar } from "../../Components/UserSidebar.tsx";
+import { UserHeader } from "../../Components/Header/UserHeader.tsx";
+import { Sidebar } from "../../Components/Side bar/UserSidebar.tsx";
 import { MainContent } from "./MainContent.tsx";
 import { CartModal } from "../../Components/CartModal.tsx"; // Si déjà créé
 

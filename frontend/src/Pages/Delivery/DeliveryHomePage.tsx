@@ -1,7 +1,7 @@
 import React from 'react';
-import { DeliveryHeader } from '../../Components/DeliveryHeader.tsx';
-import { Sidebar } from '../../Components/RestaurantSidebar.tsx';
-import { MainContent } from './MainContentOrder.tsx';
+import { DeliveryHeader } from '../../Components/Header/DeliveryHeader.tsx';
+import { Sidebar } from '../../Components/Side bar/DeliverySidebar.tsx';
+import { MainContent } from './MainContentOrdermadebydhia.tsx';
 
 
 export const RestaurantOrdersPage: React.FC = () => {
@@ -16,7 +16,7 @@ export const RestaurantOrdersPage: React.FC = () => {
                 <Sidebar />
               </div>
     
-              <MainContent /> 
+              {/*<MainContent />  */}
                
     
             </div>

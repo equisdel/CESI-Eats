@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from '../assets/logo_cesi_eats.png';
+import logo from '../../assets/logo_cesi_eats.png';
 interface RestaurantHeaderProps {
   restaurantName?: string;
   onSearchClick?: () => void;

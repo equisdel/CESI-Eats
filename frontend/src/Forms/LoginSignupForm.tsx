@@ -57,7 +57,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
       } else if (role === "client") {
         navigate("/homeUser");
       } else if (role === "delivery") {
-        navigate("/DeliveryUser");
+        navigate("/homeDelivery");
       } else if (role === "technical") {
         navigate("/homeTechnical");
       } else {

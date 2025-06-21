@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import logo from '../assets/logo_cesi_eats.png';
-import profile from '../assets/delivery-icon.png';
-import panier from '../assets/panier.png'; // 🛒 ton icône panier
+import logo from '../../assets/logo_cesi_eats.png';
+import profile from '../../assets/delivery-icon.png';
+import panier from '../../assets/panier.png'; // 🛒 ton icône panier
 
 interface DeliveryHeaderProps {
   restaurantName?: string;
