@@ -37,9 +37,7 @@ const serviceProxyMap = {
   '/payments': 'http://payment-service:5005',
   '/delivery': 'http://delivery-service:5006',
   '/analytics': 'http://analytics-service:5007',
-  '/components': 'http://component-service:5008',
-  '/register': 'http://auth-service:5001',
-  '/login': 'http://auth-service:5001',
+  '/components': 'http://component-service:5008'
 };
 
 // first middleware: authentication
@@ -48,7 +46,7 @@ app.use('/api', async (req, res, next) => {
   console.log("Request received :", req.path);
   if (req.path!='/register' && req.path!='/login') {
     try {
-      const auth = await axios.post('http://auth-service:5001', {}, {
+      const auth = await axios.post('http://auth-service:5001/authenticate', {}, {
         headers: { Authorization: req.headers.authorization }
       });
       req.user = auth.data.payload
@@ -56,8 +54,21 @@ app.use('/api', async (req, res, next) => {
     } catch {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-  } else next()
-  
+  } else {
+      try {
+        console.log("req path is: ",req.path);
+        const log_reg = await axios({
+        method: req.method,
+        url: `http://auth-service:5001${req.path}`,
+        headers: req.headers,
+        data: req.body,
+        responseType: req.method === 'GET' ? 'stream' : 'json'
+      });
+      return res.status(log_reg.status).json(log_reg.data);
+    } catch {
+      return res.status(401).json({ error: 'route to login/register not found' });
+    }
+  }
 });
 
 // routing middleware
@@ -72,6 +83,7 @@ app.use('/api', async(req, res) => {
   }
   const targetBaseUrl = serviceProxyMap[servicePath];
   const targetUrl = `${targetBaseUrl}${req.path.replace(servicePath, '')}`;
+  //const targetUrl = `${targetBaseUrl}${servicePath}`;
   console.log("path before try: ", targetUrl);
   try { 
     const response = await axios({

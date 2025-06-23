@@ -17,8 +17,8 @@ async function getUser(email) {
 }
 
 const authenticate = async (req, res) => {
-
     try {
+        console.log("estoy autenticando", req.path);
 
         let authHeader = req.headers["authorization"]
 
@@ -56,11 +56,14 @@ async function registerRestaurant(restaurantInfo, ownerId) {
 }
 
 const register = async (req, res) => {  
+    console.log("Estoy en register");
     const { role, email, password, info, restaurantInfo} = req.body;
     const user = await getUser(email);
     if (user) {
+        console.log("User exists");
         return res.status(409).json({ error: 'User already exists' });
     } else {
+        console.log("User doesn't exists");
         const hashed_pw = bcrypt.hashSync(password, 10);
         try {
             const newUser = await User.create({
@@ -70,18 +73,17 @@ const register = async (req, res) => {
                 password: hashed_pw,
                 phone_number: info.phone_number,
                 birthday_date: info.birthday_date,
-                role: role || 'user',
+                role: role || 'client',
             });
-
+            console.log("pase");
             let newRestaurant = null;
             if (role === "restaurant" && restaurantInfo) {
                 //We do this to ensure that the user is create in the table
                 const owner = await User.findOne({ where: { email } });
-            
-                
+                console.log("pase1");
                 newRestaurant = await registerRestaurant(restaurantInfo, owner.user_id);
             }
-
+            console.log("pase2");
             return res.status(201).json({ 
                 msg: role === "restaurant"
                 ? "User and restaurant created successfully!"
@@ -99,22 +101,23 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {  // Changed to const definition
     const { email, password } = req.body;
+    console.log("email y password: ", email, password);
     try {
         const user = await getUser(email);
+        console.log("user",user);
         if (user && bcrypt.compareSync(password, user.password)) {
             if (user.role == "restaurant"){
                 const restaurant = await Restaurant.findOne({
                     where: { owner_restaurant: user.user_id },
                     attributes: ['restaurant_id'], 
                 });
-
+                
                 if (!restaurant) {
                     return res.status(404).json({ error: 'No restaurant found for this user' });
                 }
 
                 const token = jwt.sign(
                     { user_id: user.user_id, restaurant_id: restaurant.restaurant_id }, JWT_ACCESS_KEY,{ expiresIn: JWT_TOKEN_LIFETIME });
-
                 return res.status(200).json({ token });
             } else {
                 const token = jwt.sign({ user_id: user.user_id }, JWT_ACCESS_KEY, { expiresIn: JWT_TOKEN_LIFETIME });

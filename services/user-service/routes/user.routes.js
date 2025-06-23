@@ -4,12 +4,12 @@ const { getUsers, updateUser, deleteUser, getUser, getNameUser, getRole, getName
 const router = express.Router();
 
 //router.get('/', getUsers);
-router.put('/update/:id', updateUser);    
-router.delete('/:id', deleteUser);
-router.get('/name/:id', getNameUser);
-router.get('/nameRestaurant/:idRestaurant', getNameRestaurant);
-router.get('/user/:id', getUser);
-router.get('/role/:id', getRole); // //:localhost:8000/api/users/role/:email
+router.put('/update/:user_id', updateUser);    
+router.delete('/:user_id', deleteUser);
+router.get('/name/:user_id', getNameUser);
+router.get('/nameRestaurant/:restaurant_id', getNameRestaurant);
+router.get('/user/:user_id', getUser);
+router.get('/role/:user_id', getRole); // //:localhost:8000/api/users/role/:email
 router.get('/', (req, res) => {
   res.status(200).json({ message: 'Welcome to the user service!' });
 });

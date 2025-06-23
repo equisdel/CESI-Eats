@@ -113,7 +113,8 @@ const getNameUser = async (req, res) => {
 
 //------------------------------------------------------- GET ROLE --------------------------------------------------------------------------
 const getRole = async (req, res) => {
-  const userId = req.params.id; // Recibir el id_user directamente
+  console.log("Entre al getRole:");
+  const userId = req.params.user_id; // Recibir el id_user directamente
   console.log("Fetching role for user ID:", userId);
 
   try {
