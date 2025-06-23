@@ -12,7 +12,7 @@ export const Sidebar: React.FC = () => {
         <img
           src="https://cdn.builder.io/api/v1/image/assets/dc2319f83b3a42a8a7d7e21e5b5256f0/f8d92a3a13dc706baeea706cba270e0bed635c30?placeholderIfAbsent=true"
           alt="Home"
-          /*onClick={() => navigate('/restaurant-home')}*/
+          onClick={() => navigate('/homeUser')}
           className="object-contain shrink-0 rounded-none aspect-square w-[60px] cursor-pointer hover:scale-105 transition duration-200"
         />
         <img
