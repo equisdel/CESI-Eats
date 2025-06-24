@@ -68,15 +68,10 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
 
   const scrollLeft = () => scrollRef.current?.scrollBy({ left: -700, behavior: "smooth" });
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 700, behavior: "smooth" });
-menus.map((menu, i) => {
-  console.log("🧾 Menu reçu :", menu);
-
-});
 
   const baseUrl = window.location.origin.includes("localhost")
     ? "http://localhost:8000"
     : window.location.origin;
-    
 
   return (
     <section className="mt-10 max-md:mt-10">
@@ -95,17 +90,17 @@ menus.map((menu, i) => {
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide"
           style={{ maxWidth: "1280px", scrollBehavior: "smooth", scrollbarWidth: "none" }}
         >
-{Array.isArray(menus) &&
-  menus.map((menu, i) => (
-            <div key={menu.menu_id} className="shrink-0">
-              <FoodCard
-                title={menu.menu_name || "Menu"}
-                imageUrl={`${baseUrl}/api/menus/images/${menu.menu_photo}`} // ✅ via Gateway
-                hasWhiteBackground={i % 2 === 0}
-                onAddToCart={() => onAddToCart(menu)}
-              />
-            </div>
-          ))}
+          {Array.isArray(menus) &&
+            menus.map((menu, i) => (
+              <div key={menu.menu_id} className="shrink-0">
+                <FoodCard
+                  title={menu.menu_name || "Menu"}
+                  imageUrl={`${baseUrl}/api/menus/images/${menu.menu_photo}`}
+                  hasWhiteBackground={i % 2 === 0}
+                  onAddToCart={() => onAddToCart(menu)}
+                />
+              </div>
+            ))}
         </div>
 
         <button onClick={scrollRight}>

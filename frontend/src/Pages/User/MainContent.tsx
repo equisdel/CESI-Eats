@@ -57,7 +57,14 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
 // ✅ Appel réel vers le Gateway en mode dev
 const fetchMenus = async () => {
   try {
-    const response = await fetch("http://localhost:8000/api/menus/menu/");
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8000/api/menus/menu/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
+        },
+      });
     const data = await response.json();
     return data;
   } catch (err) {

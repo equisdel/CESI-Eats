@@ -71,7 +71,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
     console.log("infoUser: ",payload);
     try {
-      const response = await fetch("http://localhost:8080/register", {
+      const response = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

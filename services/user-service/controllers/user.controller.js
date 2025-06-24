@@ -63,7 +63,7 @@ const deleteUser = async (req, res) => {
 };
 
 //------------------------------------------------------- GET INFO USER --------------------------------------------------------------------------
-const getUserById = async (req, res) => {
+const getUser = async (req, res) => {
   const userId = req.params.id;
   console.log("I'm in get info for", userId);
 
@@ -84,47 +84,23 @@ const getUserById = async (req, res) => {
   }
 };
 
-//------------------------------------------------------- GET INFO USER BY EMAIL --------------------------------------------------------------------------
-const getUserByEmail = async (req, res) => {
-  const userEmail = decodeURIComponent(req.params.email);
-  console.log("I'm in get info for email:", userEmail);
-
-  try {
-    const user = await User.findOne({
-      where: { email: userEmail }, 
-      attributes: { exclude: ['role', 'created_at', 'password'] }, 
-    });
-
-    if (!user) {
-      console.log("I didn't find the user");
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Failed to fetch user' });
-  }
-};
-
 
 //------------------------------------------------------- GET NAME USER --------------------------------------------------------------------------
 const getNameUser = async (req, res) => {
-  const userEmail = decodeURIComponent(req.params.email);
-  console.log("I'm in get info for email:", userEmail);
+  const userId = req.params.id; 
+  console.log("Fetching user info for ID:", userId);
 
   try {
-    const user = await User.findOne({
-      where: { email: userEmail },
-      attributes: ['first_name', 'last_name'], // Get name and surname
+    const user = await User.findByPk(userId, {
+      attributes: ['first_name', 'last_name'], 
     });
 
     if (!user) {
-      console.log("I didn't find the user");
+      console.log("User not found for ID:", userId);
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Put name and surname togheter
+    // Combinar nombre y apellido
     const fullName = `${user.first_name} ${user.last_name}`;
     res.status(200).json({ name: fullName });
   } catch (error) {
@@ -133,121 +109,60 @@ const getNameUser = async (req, res) => {
   }
 };
 
-//------------------------------------------------------- GET ID USER BY EMAIL --------------------------------------------------------------------------
-const getUserId = async (req, res) => {
-  const userEmail = decodeURIComponent(req.params.email);
+
+
+//------------------------------------------------------- GET ROLE --------------------------------------------------------------------------
+const getRole = async (req, res) => {
+  console.log("Entre al getRole:");
+  const userId = req.params.user_id; // Recibir el id_user directamente
+  console.log("Fetching role for user ID:", userId);
 
   try {
-    const user = await User.findOne({
-      where: { email: userEmail },
-      attributes: ['user_id'], 
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.status(200).json({ user_id: user.user_id });
-  } catch (error) {
-    console.error('Error fetching user ID:', error);
-    res.status(500).json({ error: 'Failed to fetch user ID' });
-  }
-};
-
-//------------------------------------------------------- GET ID RESTAURANT BY EMAIL --------------------------------------------------------------------------
-const getRestaurantId = async (req, res) => {
-  const userEmail = decodeURIComponent(req.params.email);
-
-  try {
-    const user = await User.findOne({
-      where: { email: userEmail },
-      attributes: ['user_id'], 
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Search the restaurant associate to the restaurant owner
-    const restaurant = await Restaurant.findOne({
-      where: { owner_restaurant: user.user_id },
-      attributes: ['restaurant_id'], 
-    });
-
-    if (!restaurant) {
-      return res.status(404).json({ error: 'Restaurant not found for this user' });
-    }
-
-    res.status(200).json({ restaurant_id: restaurant.restaurant_id });
-  } catch (error) {
-    console.error('Error fetching restaurant ID:', error);
-    res.status(500).json({ error: 'Failed to fetch restaurant ID' });
-  }
-};
-
-//------------------------------------------------------- GET ROLE BY EMAIL --------------------------------------------------------------------------
-const getRoleByEmail = async (req, res) => {
-  const userEmail = decodeURIComponent(req.params.email);
-  console.log("Fetching role for email:", userEmail);
-
-  try {
-    const user = await User.findOne({
-      where: { email: userEmail },
+    const user = await User.findByPk(userId, { 
       attributes: ['role'], 
     });
 
     if (!user) {
-      console.log("User not found for email:", userEmail);
+      console.log("User not found for ID:", userId);
       return res.status(404).json({ error: 'User not found' });
     }
 
     res.status(200).json({ role: user.role });
   } catch (error) {
-    console.error('Error fetching role by email:', error);
+    console.error('Error fetching role by user ID:', error);
     res.status(500).json({ error: 'Failed to fetch user role' });
   }
 };
 
-///------------------------------------------------------- GET NAME RESTAURANT BY EMAIL --------------------------------------------------------------------------
+
+///------------------------------------------------------- GET NAME RESTAURANT BY ID --------------------------------------------------------------------------
 const getNameRestaurant = async (req, res) => {
-  const userEmail = decodeURIComponent(req.params.email);
+  const restaurantId = req.params.idRestaurante;
 
   try {
-    const user = await User.findOne({
-      where: { email: userEmail },
-      attributes: ['user_id'], 
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Search the restaurant associate to the restaurant owner
-    const restaurant = await Restaurant.findOne({
-      where: { owner_restaurant: user.user_id },
+    // Search the restaurant by its ID
+    const user = await Restaurant.findByPk(restaurantId, {
       attributes: ['name'], 
     });
 
     if (!restaurant) {
-      return res.status(404).json({ error: 'Restaurant not found for this user' });
+      return res.status(404).json({ error: 'Restaurant not found' });
     }
 
     res.status(200).json({ name: restaurant.name });
   } catch (error) {
-    console.error('Error fetching restaurant ID:', error);
+    console.error('Error fetching restaurant name:', error);
     res.status(500).json({ error: 'Failed to fetch restaurant name' });
   }
 };
+
 
 module.exports = {  
   getUsers, 
   updateUser, 
   deleteUser, 
-  getUserById, 
-  getUserByEmail, 
+  getUser, 
   getNameUser, 
-  getUserId, 
-  getRestaurantId,
-  getRoleByEmail,
+  getRole,
   getNameRestaurant
 };

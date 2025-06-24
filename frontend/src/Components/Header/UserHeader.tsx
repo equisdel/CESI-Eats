@@ -24,13 +24,15 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
 
   useEffect(() => {
     const fetchRestaurantName = async () => {
-      const token = localStorage.getItem("token");
-      const decoded: any = jwtDecode(token);
-      const emailUser = encodeURIComponent(decoded.email);
-      try {
-        const response = await fetch(
-          `http://localhost:8000/api/users/name/${emailUser}`
-        );
+      try{
+        const token = localStorage.getItem("token");
+        //const decoded: any = jwtDecode(token);
+        console.log("Token encontrado: ",token);
+        const response = await fetch(`http://localhost:8000/api/users/name/user_id<>`, {
+            headers: {
+              Authorization: `Bearer ${token}`, 
+            },
+          });
 
         if (!response.ok) {
           throw new Error("Failed to fetch the user name.");

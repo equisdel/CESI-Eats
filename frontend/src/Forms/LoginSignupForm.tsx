@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 type Props = {
   onSignUp: () => void;
@@ -33,14 +34,16 @@ export function LoginSignupForm({ onSignUp }: Props) {
       }
 
       // Fetch user role
-      const roleResponse = await fetch(`http://localhost:8000/api/users/role/${encodeURIComponent(email)}`, {
+      const decoded: any = jwtDecode(data.token);
+      console.log("Contenido id: ", decoded.user_id);
+      const roleResponse = await fetch(`http://localhost:8000/api/users/role/${(decoded.user_id)}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${data.token}`, // AsegÃºrate de pasar el token si es requerido
+          Authorization: `Bearer ${data.token}`, 
         },
       });
-
+      console.log("Contenido obtain in role: ", roleResponse);
       if (!roleResponse.ok) {
         const roleError = await roleResponse.json();
         throw new Error(roleError.message || "Failed to fetch user role.");

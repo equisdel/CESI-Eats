@@ -25,9 +25,9 @@ export function ProfileCard() {
     }
 
     const decoded: any = jwtDecode(token);
-    const emailUser = encodeURIComponent(decoded.email);
+    console.log("Contenido id: ", decoded.user_id);
 
-    fetch(`http://localhost:8000/api/users/email/${emailUser}`, {
+    fetch(`http://localhost:8000/api/users/email/${decoded.user_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
