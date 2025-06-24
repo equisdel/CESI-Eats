@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 
 type Props = {
   onSignUp: () => void;
@@ -34,9 +33,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
       }
 
       // Fetch user role
-      const decoded: any = jwtDecode(data.token);
-      console.log("Contenido id: ", decoded.user_id);
-      const roleResponse = await fetch(`http://localhost:8000/api/users/role/${(decoded.user_id)}`, {
+      const roleResponse = await fetch(`http://localhost:8000/api/users/role/user_id<>`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 
 interface UserData {
   user_id: string;
@@ -24,10 +23,7 @@ export function ProfileCard() {
       return;
     }
 
-    const decoded: any = jwtDecode(token);
-    console.log("Contenido id: ", decoded.user_id);
-
-    fetch(`http://localhost:8000/api/users/email/${decoded.user_id}`, {
+    fetch(`http://localhost:8000/api/users/user/user_id<>`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

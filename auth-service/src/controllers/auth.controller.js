@@ -80,10 +80,8 @@ const register = async (req, res) => {
             if (role === "restaurant" && restaurantInfo) {
                 //We do this to ensure that the user is create in the table
                 const owner = await User.findOne({ where: { email } });
-                console.log("pase1");
                 newRestaurant = await registerRestaurant(restaurantInfo, owner.user_id);
             }
-            console.log("pase2");
             return res.status(201).json({ 
                 msg: role === "restaurant"
                 ? "User and restaurant created successfully!"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from '../../assets/logo_cesi_eats.png';
 interface RestaurantHeaderProps {
   restaurantName?: string;
@@ -8,7 +8,6 @@ interface RestaurantHeaderProps {
 }
 
 export const RestaurantHeader: React.FC<RestaurantHeaderProps> = ({
-  restaurantName = "End-User's Name",
   onSearchClick,
   onProfileClick,
   onMenuClick,
@@ -18,6 +17,31 @@ export const RestaurantHeader: React.FC<RestaurantHeaderProps> = ({
   const toggleNotifications = () => {
     setShowNotifications((prev) => !prev);
   };
+
+  const [restaurantName, setRestaurantName] = useState("Loading...");
+
+  useEffect(() => {
+    const fetchRestaurantName = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/users/nameRestaurant/restaurant_id<>`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch the user name.");
+        }
+
+        const data = await response.json();
+        setRestaurantName(data.name || "Unknown User"); 
+      } catch (error) {
+        console.error("Error fetching restaurant name:", error);
+        setRestaurantName("Unknown User");
+      }
+    };
+
+    fetchRestaurantName();
+  }, []);
 
   return (
     <header className="flex justify-between items-center px-6 py-3 w-full font-bold bg-[#ACA7AA] text-white relative">

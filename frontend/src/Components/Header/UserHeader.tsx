@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import logo from "../../assets/logo_cesi_eats.png";
 import profile from "../../assets/userIcon.png";
 import panier from "../../assets/panier.png"; // 🛒 ton icône panier
-import { jwtDecode } from "jwt-decode";
 
 interface UserHeaderProps {
   onSearchClick?: () => void;
@@ -26,7 +25,6 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
     const fetchRestaurantName = async () => {
       try{
         const token = localStorage.getItem("token");
-        //const decoded: any = jwtDecode(token);
         console.log("Token encontrado: ",token);
         const response = await fetch(`http://localhost:8000/api/users/name/user_id<>`, {
             headers: {

@@ -46,11 +46,31 @@ app.use('/api', async (req, res, next) => {
   console.log("Request received :", req.path);
   if (req.path!='/register' && req.path!='/login') {
     try {
+      console.log("entre al if /register y /login");
       const auth = await axios.post('http://auth-service:5001/authenticate', {}, {
         headers: { Authorization: req.headers.authorization }
       });
+      console.log("After autentication:", req.user);
       req.user = auth.data.payload
       
+      // replace `user_id<>` and `restaurant_id<>` in URL with token values
+      if (req.user) {
+        const { user_id, restaurant_id } = req.user;
+        console.log("user_id value: ", user_id);
+        console.log("restaurant_id value: ", restaurant_id);
+        
+        //To solve changes with the <>
+        let updatedPath = req.path;
+        if (updatedPath.includes('%3C') || updatedPath.includes('%3E')) {
+          updatedPath = decodeURIComponent(updatedPath);
+        }
+
+        req.url = updatedPath
+          .replace('/user_id<>', `/${user_id}`)
+          .replace('/restaurant_id<>', `/${restaurant_id}`);
+      }
+      console.log("path before next",req.path);
+      console.log("url before next",req.url);
       next()
       
     } catch {
@@ -77,9 +97,9 @@ app.use('/api', async (req, res, next) => {
 app.use('/api', async(req, res) => {
   
   console.log("Valid request :", req.path);
-  console.log(Object.keys(serviceProxyMap))
+  //console.log(Object.keys(serviceProxyMap))
   const servicePath = Object.keys(serviceProxyMap).find(path => req.path.startsWith(path));
-  console.log(servicePath)
+  console.log("service path: ",servicePath);
   if (!servicePath) {
     return res.status(404).json({ error: 'Service not found' });
   }

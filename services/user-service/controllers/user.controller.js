@@ -14,7 +14,8 @@ const getUsers = async (req, res) => {
 
 //------------------------------------------------------- UPDATE USER --------------------------------------------------------------------------
 const updateUser = async (req, res) => {
-  const userId = req.params.id;
+  console.log("Inside of updateUser");
+  const userId = req.params.user_id;
   const { first_name, last_name, email, password, phone_number, birthday_date, role } = req.body;
 
   try {
@@ -44,7 +45,8 @@ const updateUser = async (req, res) => {
 
 //------------------------------------------------------- DELETE USER --------------------------------------------------------------------------
 const deleteUser = async (req, res) => {
-  const userId = req.params.id;
+  console.log("Inside of deleteUser");
+  const userId = req.params.user_id;
 
   try {
     const user = await User.findByPk(userId);
@@ -64,7 +66,8 @@ const deleteUser = async (req, res) => {
 
 //------------------------------------------------------- GET INFO USER --------------------------------------------------------------------------
 const getUser = async (req, res) => {
-  const userId = req.params.id;
+  console.log("Inside of getUser");
+  const userId = req.params.user_id;
   console.log("I'm in get info for", userId);
 
   try {
@@ -87,7 +90,8 @@ const getUser = async (req, res) => {
 
 //------------------------------------------------------- GET NAME USER --------------------------------------------------------------------------
 const getNameUser = async (req, res) => {
-  const userId = req.params.id; 
+  console.log("Inside of getNameUser");
+  const userId = req.params.user_id; 
   console.log("Fetching user info for ID:", userId);
 
   try {
@@ -113,6 +117,7 @@ const getNameUser = async (req, res) => {
 
 //------------------------------------------------------- GET ROLE --------------------------------------------------------------------------
 const getRole = async (req, res) => {
+  console.log("Inside of getRole");
   console.log("Entre al getRole:");
   const userId = req.params.user_id; // Recibir el id_user directamente
   console.log("Fetching role for user ID:", userId);
@@ -137,7 +142,8 @@ const getRole = async (req, res) => {
 
 ///------------------------------------------------------- GET NAME RESTAURANT BY ID --------------------------------------------------------------------------
 const getNameRestaurant = async (req, res) => {
-  const restaurantId = req.params.idRestaurante;
+  console.log("Inside of getNameRestaurant");
+  const restaurantId = req.params.restaurant_id;
 
   try {
     // Search the restaurant by its ID
