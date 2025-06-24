@@ -81,12 +81,22 @@ export const CartModal: React.FC<CartModalProps> = ({
       : window.location.origin;
 
     try {
-      const response = await axios.post(`${baseUrl}/api/orders`, {
-        client_id: "00000000-0000-0000-0000-000000000001",
-        delivery_address: `${deliveryAddress.address}, ${deliveryAddress.postalCode} ${deliveryAddress.city}`,
-        total_price: total,
-        menus: items.map((item) => item.id),
-      });
+      const token = localStorage.getItem("token");
+console.log("Token envoyé:", token);
+const orderData = {
+  client_id: "00000000-0000-0000-0000-000000000001",
+  delivery_address: `${deliveryAddress.address}, ${deliveryAddress.postalCode} ${deliveryAddress.city}`,
+  total_price: total,
+  menus: items.map((item) => item.id),
+};
+
+const response = await axios.post(`${baseUrl}/api/orders`, orderData, {
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`, // ✅ Corrigé ici avec les backticks
+  },
+});
+
 
       alert(`Order confirmed!`);
       onClose();

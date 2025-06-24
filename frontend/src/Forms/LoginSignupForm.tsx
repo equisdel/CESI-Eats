@@ -16,7 +16,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
     e.preventDefault();
     try {
       // Login request
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("http://localhost:8000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -32,7 +32,7 @@ export function LoginSignupForm({ onSignUp }: Props) {
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-
+      
       // Fetch user role
       const decoded: any = jwtDecode(data.token);
       console.log("Contenido id: ", decoded.user_id);
@@ -53,14 +53,14 @@ export function LoginSignupForm({ onSignUp }: Props) {
       const role = roleData.role;
 
       console.log("User role:", role);
-
+      
       // Redirect based on role
       if (role === "restaurant") {
         navigate("/homeRestaurant");
       } else if (role === "client") {
         navigate("/homeUser");
       } else if (role === "delivery") {
-        navigate("/homeDelivery");
+        navigate("/DeliveryUser");
       } else if (role === "technical") {
         navigate("/homeTechnical");
       } else {

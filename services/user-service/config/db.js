@@ -11,11 +11,23 @@ const sequelize = new Sequelize('cesi_global', 'user', 'password', {
 });
 
 const connectDB = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Database connected successfully.');
-  } catch (error) {
-    console.error('Database connection failed:', error);
+  const maxRetries = 10;
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Database connected successfully.');
+      break;
+    } catch (error) {
+      console.warn(`❌ Database connection failed (attempt ${attempt + 1}/${maxRetries}):`, error.message);
+      attempt++;
+      await new Promise((res) => setTimeout(res, 3000)); // attend 3 secondes
+    }
+  }
+
+  if (attempt === maxRetries) {
+    console.error('🚨 Could not connect to the database after multiple attempts. Exiting.');
     process.exit(1);
   }
 };
