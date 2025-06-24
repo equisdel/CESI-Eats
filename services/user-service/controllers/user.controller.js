@@ -147,7 +147,7 @@ const getNameRestaurant = async (req, res) => {
 
   try {
     // Search the restaurant by its ID
-    const user = await Restaurant.findByPk(restaurantId, {
+    const restaurant = await Restaurant.findByPk(restaurantId, {
       attributes: ['name'], 
     });
 
