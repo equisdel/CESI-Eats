@@ -133,10 +133,21 @@ export const MainContent: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      const pendingRes = await axios.get(`${baseUrl}/api/orders/pending/${restaurantId}`);
-      console.log("📦 Données reçues côté React :", pendingRes.data);
 
-      const preparingRes = await axios.get(`${baseUrl}/api/orders/preparing/${restaurantId}`);
+
+const token = localStorage.getItem("token");
+
+      const pendingRes = await axios.get(`${baseUrl}/api/orders/pending/${restaurantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const preparingRes = await axios.get(`${baseUrl}/api/orders/preparing/${restaurantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setPendingOrders(pendingRes.data);
       setPreparingOrders(preparingRes.data);
     } catch (err) {
@@ -152,7 +163,14 @@ export const MainContent: React.FC = () => {
 
   const handleAccept = async (orderId: string) => {
     try {
-      await axios.put(`${baseUrl}/api/orders/accept/${orderId}`);
+      const token = localStorage.getItem("token");
+
+await axios.put(`${baseUrl}/api/orders/accept/${orderId}`, null, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
       fetchOrders(); // Refresh data after accept
     } catch (err) {
       console.error("Erreur lors de l'acceptation :", err);
