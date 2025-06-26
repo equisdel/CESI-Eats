@@ -69,6 +69,7 @@ app.use('/api', async (req, res, next) => {
           .replace('/user_id<>', `/${user_id}`)
           .replace('/restaurant_id<>', `/${restaurant_id}`);
       }
+      
       console.log("path before next",req.path);
       console.log("url before next",req.url);
       next()
@@ -84,6 +85,8 @@ app.use('/api', async (req, res, next) => {
         url: `http://auth-service:5001${req.path}`,
         headers: req.headers,
         data: req.body,
+        params: req.query,
+
         responseType: req.method === 'GET' ? 'stream' : 'json'
       });
       return res.status(log_reg.status).json(log_reg.data);
@@ -104,7 +107,9 @@ app.use('/api', async(req, res) => {
     return res.status(404).json({ error: 'Service not found' });
   }
   const targetBaseUrl = serviceProxyMap[servicePath];
-  const targetUrl = `${targetBaseUrl}${req.path.replace(servicePath, '')}`;
+const targetUrl = `${targetBaseUrl}${req.url.replace(servicePath, '')}`;
+
+  
   //const targetUrl = `${targetBaseUrl}${servicePath}`;
   console.log("path before try: ", targetUrl);
   try { 
@@ -113,6 +118,8 @@ app.use('/api', async(req, res) => {
       url: targetUrl,
       headers: req.headers,
       data: req.body,
+      params: req.query, // ✅ AJOUT INDISPENSABLE
+
       responseType: req.method === 'GET' ? 'stream' : 'json'
     });
     

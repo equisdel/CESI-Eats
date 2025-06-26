@@ -36,7 +36,9 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
 
   // 🔁 Dynamique : si on est sur un port autre que 80, utilise http://localhost:8000
   const isDev = window.location.port !== "80";
-  const baseUrl = isDev ? "http://localhost:8000" : "";
+const baseUrl = window.location.origin.includes("localhost")
+  ? "http://localhost:8000"
+  : window.location.origin;
 
   return (
     <section className="mt-10 max-md:mt-10">
@@ -62,11 +64,13 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
           {elements.map((element, i) => (
             <div key={element.id} className="shrink-0">
               <FoodCard
-                title={element.Restaurant?.name || 'Element'}
-                imageUrl={`http://localhost/images/${element.photo}`}
-                hasWhiteBackground={i % 2 === 0}
-                onViewElement={() => onViewElement(element)}
-              />
+  title={element.menu_name}
+  subtitle={`€ ${element.menu_price}`}
+imageUrl={`${baseUrl}/api/menus/images/${element.menu_photo}`}
+  hasWhiteBackground={i % 2 === 0}
+  onViewElement={() => onViewElement(element)}
+/>
+
             </div>
           ))}
         </div>

@@ -5,7 +5,9 @@ interface FoodCardProps {
   imageUrl: string;
   title: string;
   hasWhiteBackground?: boolean;
+    price: string;
   onAddToCart: () => void;
+
 }
 
 interface FoodSectionProps {
@@ -18,6 +20,7 @@ interface FoodSectionProps {
 export const FoodCard: React.FC<FoodCardProps> = ({
   imageUrl,
   title,
+  price,
   hasWhiteBackground = false,
   onAddToCart,
 }) => {
@@ -38,21 +41,25 @@ export const FoodCard: React.FC<FoodCardProps> = ({
 
       <div className="flex flex-col px-3 mt-0">
         <h3 className="self-start">{title}</h3>
-        <div className="flex justify-between mt-2">
-          <button
-            onClick={handleAddToCart}
-            className="text-sm font-semibold bg-blue-600 text-white rounded-md px-2 py-1 hover:bg-blue-700"
-          >
-            + Add to Cart
-          </button>
-          <button onClick={handleViewDetails} aria-label="View">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/dc2319f83b3a42a8a7d7e21e5b5256f0/31b948f52339ca9bf68fafcc54211607cc7beb02?placeholderIfAbsent=true"
-              className="object-contain w-[25px]"
-              alt="View"
-            />
-          </button>
-        </div>
+        <div className="flex items-center justify-between mt-2">
+  <button
+    onClick={handleAddToCart}
+    className="text-sm font-semibold bg-blue-600 text-white rounded-md px-2 py-1 hover:bg-blue-700"
+  >
+    + Add to Cart
+  </button>
+
+  <span className="text-sm font-medium text-black mx-2">{price} €</span>
+
+  <button onClick={handleViewDetails} aria-label="View">
+    <img
+      src="https://cdn.builder.io/api/v1/image/assets/dc2319f83b3a42a8a7d7e21e5b5256f0/31b948f52339ca9bf68fafcc54211607cc7beb02?placeholderIfAbsent=true"
+      className="object-contain w-[25px]"
+      alt="View"
+    />
+  </button>
+</div>
+
       </div>
     </article>
   );
@@ -90,17 +97,24 @@ export const FoodSection: React.FC<FoodSectionProps> = ({
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide"
           style={{ maxWidth: "1280px", scrollBehavior: "smooth", scrollbarWidth: "none" }}
         >
-          {Array.isArray(menus) &&
-            menus.map((menu, i) => (
-              <div key={menu.menu_id} className="shrink-0">
-                <FoodCard
-                  title={menu.menu_name || "Menu"}
-                  imageUrl={`${baseUrl}/api/menus/images/${menu.menu_photo}`}
-                  hasWhiteBackground={i % 2 === 0}
-                  onAddToCart={() => onAddToCart(menu)}
-                />
-              </div>
-            ))}
+          {
+  Array.isArray(menus) &&
+    menus.map((menu, i) => {
+
+      return (
+        <div key={menu.menu_id} className="shrink-0">
+          <FoodCard
+            title={menu.menu_name }
+            imageUrl={`${baseUrl}/api/menus/images/${menu.menu_photo}`}
+            hasWhiteBackground={i % 2 === 0}
+            onAddToCart={() => onAddToCart(menu)} 
+            price={menu.menu_price} // Assuming menu_price is a number
+          />
+        </div>
+      );
+    })
+}
+
         </div>
 
         <button onClick={scrollRight}>

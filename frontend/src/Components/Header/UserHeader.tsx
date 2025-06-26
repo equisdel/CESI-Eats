@@ -25,7 +25,6 @@ export const UserHeader: React.FC<UserHeaderProps> = ({
     const fetchRestaurantName = async () => {
       try{
         const token = localStorage.getItem("token");
-        console.log("Token encontrado: ",token);
         const response = await fetch(`http://localhost:8000/api/users/name/user_id<>`, {
             headers: {
               Authorization: `Bearer ${token}`, 

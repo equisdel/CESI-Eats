@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 // ---------------- OrderCard ----------------
 interface OrderCardProps {
@@ -75,7 +76,6 @@ imageMapRef.current[orderId] = `${baseUrl}/api/menus/images/${randomMenu.menu_ph
         }
 
         const imageUrl = imageMapRef.current[orderId] || `${baseUrl}/default.jpg`;
-  console.log("➡️ order", order); // 🧪
 
         return (
           <OrderCard
@@ -125,7 +125,25 @@ const OrderStatusColumn: React.FC<OrderStatusColumnProps> = ({
 export const MainContent: React.FC = () => {
   const [pendingOrders, setPendingOrders] = useState<any[]>([]);
   const [preparingOrders, setPreparingOrders] = useState<any[]>([]);
-  const restaurantId = "10000000-0000-0000-0000-000000000001";
+const token = localStorage.getItem("token");
+let restaurantId: string | undefined = undefined;
+if (token) {
+  try {
+type TokenPayload = {
+  user_id: string;
+  restaurant_id?: string;
+};
+
+const decoded: TokenPayload = jwtDecode(token);
+    restaurantId = decoded.restaurant_id;
+  } catch (error) {
+    console.error("Erreur lors du décodage du token :", error);
+  }
+}
+
+
+
+
 
   const baseUrl = window.location.origin.includes("localhost")
     ? "http://localhost:8000"
@@ -135,7 +153,6 @@ export const MainContent: React.FC = () => {
     try {
 
 
-const token = localStorage.getItem("token");
 
       const pendingRes = await axios.get(`${baseUrl}/api/orders/pending/${restaurantId}`, {
         headers: {

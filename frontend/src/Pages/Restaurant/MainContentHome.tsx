@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { AddItemForm } from '../../Forms/Menu/AddItemForm.tsx';
 import AddMenuForm from "../../Forms/Menu/AddMenuForm.tsx";
 import { Modal } from "../../Forms/Menu/Modal.tsx";
-
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 interface MainContentProps {
   onAddToCart: (menu: any) => void;
 }
@@ -80,7 +81,6 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
         />
         <FoodSection
           title="ITEMS"
-          showAll={true}
           elements={items}
           onViewElement={handleAddItem}
           onAddElement={handleAddItem}
@@ -92,9 +92,44 @@ export const MainContent: React.FC<MainContentProps> = ({ onAddToCart }) => {
 
 const fetchMenus = async () => {
   try {
-    const restaurant_id = JSON.parse(localStorage.getItem("restaurant_id") || "RestIdNotSavedInLS");    // make sure restaurant_id is in local storage
-    const response = await fetch(`http://localhost:8000/api/menu/menu/?restaurant_id=${restaurant_id}`);
-    console.log(response)
+    // 🔐 Récupérer et décoder le token
+    const token = localStorage.getItem("token");
+    let restaurantId: string | undefined = undefined;
+
+    if (token) {
+      try {
+        type TokenPayload = {
+          user_id: string;
+          restaurant_id?: string;
+        };
+
+        const decoded: TokenPayload = jwtDecode(token);
+        restaurantId = decoded.restaurant_id;
+      } catch (error) {
+        console.error("Erreur lors du décodage du token :", error);
+      }
+    }
+    // ⛔ Pas de restaurant_id → ne pas fetch
+    if (!restaurantId) {
+      console.warn("restaurant_id manquant dans le token !");
+      return [];
+    }
+    const baseUrl = window.location.origin.includes("localhost")
+      ? "http://localhost:8000"
+      : window.location.origin;
+
+    // 🌐 Appel vers l’API Gateway
+    const response = await fetch(`${baseUrl}/api/menus/menu/?restaurant_id=${restaurantId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur de réponse du serveur");
+    }
+
     const data = await response.json();
     return data;
   } catch (err) {
@@ -103,15 +138,60 @@ const fetchMenus = async () => {
   }
 };
 
+
 const fetchItems = async () => {
   try {
-    const restaurant_id = JSON.parse(localStorage.getItem("restaurant_id") || "RestIdNotSavedInLS");    // make sure restaurant_id is in local storage
-    const response = await fetch(`http://localhost:8000/api/menu/item/?restaurant_id=${restaurant_id}`);
-    console.log(response)
-    const data = await response.json();
-    return data;
+    // 🔐 Récupérer et décoder le token
+    const token = localStorage.getItem("token");
+
+    let restaurantId: string | undefined = undefined;
+
+    if (token) {
+      try {
+        type TokenPayload = {
+          user_id: string;
+          restaurant_id?: string;
+        };
+
+        const decoded: TokenPayload = jwtDecode(token);
+        restaurantId = decoded.restaurant_id;
+      } catch (error) {
+        console.error("Erreur lors du décodage du token :", error);
+      }
+    }
+
+
+    // ⛔ Pas de restaurant_id → ne pas fetch
+    if (!restaurantId) {
+      console.warn("restaurant_id manquant dans le token !");
+      return [];
+    }
+
+
+    console.log("Bearer ", token);
+    console.log("restaurantId ", restaurantId);
+
+    const baseUrl = window.location.origin.includes("localhost")
+      ? "http://localhost:8000"
+      : window.location.origin;
+
+    // 🌐 Appel vers l’API Gateway
+    const response = await axios.get(`${baseUrl}/api/menus/item`, {
+  params: { restaurant_id: restaurantId },
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+    // Vérification de la réponse
+    if (response.status !== 200) {
+      throw new Error("Erreur de réponse du serveur");
+    }
+
+    return response.data;
   } catch (err) {
     console.error("Erreur lors du fetch des items :", err);
-    return [];
-  }
+    return [];
+  }
 };

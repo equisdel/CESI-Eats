@@ -25,11 +25,12 @@ export const UserHomePage: React.FC = () => {
         ...prev,
         {
           id: menu.menu_id,
-          title: `Menu #${menu.menu_id}`,
+          title: menu.menu_name, // Ajout du nom du menu`,
           price: menu.menu_price,
           quantity: 1,
-          imageUrl: `http://localhost:8000/api/menus/images/${menu.photo}`,
+          imageUrl: `http://localhost:8000/api/menus/images/${menu.menu_photo}`,
           paid: false,
+           restaurant_id: menu.restaurant_id,
         },
       ];
     });

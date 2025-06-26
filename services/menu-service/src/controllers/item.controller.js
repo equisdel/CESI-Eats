@@ -61,30 +61,43 @@ const deleteItem = async (req,res) => {
 //   /item?item_id=1        -> search an item by id
 //   /item?menu_id=2        -> search all items of a menu
 //   /item?restaurant_id=1  -> search all items of a restaurant
-const findItems = async (req,res) => {
+const findItems = async (req, res) => {
+  try {
+    // 🛠️ DEBUG ICI : ce que reçoit exactement Express
+    console.log("🔍 req.url brut :", req.url);
+    console.log("🔍 req.query brut :", req.query);
 
-    const { item_id, menu_id, restaurant_id, limit, order, offset } = req.query
+    const { restaurant_id, item_id, menu_id, limit, order, offset } = req.query;
 
-    try {
+    console.log("📩 Requête reçue avec :", req.query);
+    console.log("🧪 typeof restaurant_id :", typeof restaurant_id);
+    console.log("🔎 restaurant_id reçu :", restaurant_id);
 
-        const where = {};
-        if (item_id) where.item_id = item_id;
-        if (menu_id) where.menu_id = menu_id;
-        if (restaurant_id) where.restaurant_id = restaurant_id;
-
-        const items = await Item.findAll({
-            where,
-            limit: limit ? parseInt(limit) : 10,
-            order: order ? [['item_name', order]] : [['item_name', 'ASC']], // default order
-            offset: offset ? parseInt(offset) : 0
-        });
-        return res.status(200).json(items);
-
-    } catch (error) {
-        return res.status(500).json({ error: "Failed to search items", details: error.message });
+    const where = {};
+    if (restaurant_id && restaurant_id !== 'undefined' && restaurant_id !== '') {
+      where.restaurant_id = restaurant_id;
     }
+    if (item_id) where.item_id = item_id;
+    if (menu_id) where.menu_id = menu_id;
 
-}
+    console.log("🛠️ WHERE final :", where);
+
+    const items = await Item.findAll({
+      where,
+      limit: limit ? parseInt(limit) : 10,
+      order: order ? [['item_name', order]] : [['item_name', 'ASC']],
+      offset: offset ? parseInt(offset) : 0,
+    });
+
+    return res.status(200).json(items);
+  } catch (error) {
+    console.error("❌ Erreur dans findItems :", error);
+    return res.status(500).json({ error: "Erreur lors de la recherche des items", details: error.message });
+  }
+};
+
+
+
 
 // MENU UPDATE
 

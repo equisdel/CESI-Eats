@@ -111,4 +111,15 @@ export const acceptOrder = async (req, res) => {
   }
 };
 
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.status(404).json({ error: "Commande introuvable" });
+    res.json(order);
+  } catch (error) {
+    console.error("Erreur récupération commande :", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
 export default createOrder;

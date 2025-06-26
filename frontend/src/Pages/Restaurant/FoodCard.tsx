@@ -3,6 +3,7 @@ import React from "react";
 interface FoodCardProps {
   imageUrl: string;
   title: string;
+  subtitle?: string; // ✅ ajouté pour afficher le prix
   hasWhiteBackground?: boolean;
   onViewElement: () => void;
 }
@@ -10,6 +11,7 @@ interface FoodCardProps {
 export const FoodCard: React.FC<FoodCardProps> = ({
   imageUrl,
   title,
+  subtitle,
   hasWhiteBackground = false,
   onViewElement,
 }) => {
@@ -26,14 +28,13 @@ export const FoodCard: React.FC<FoodCardProps> = ({
       </div>
 
       <div className="flex flex-col px-3 mt-0">
-        <h3 className="self-start">{title}</h3>
-        <div className="flex justify-between mt-2">
-          <button
-            onClick={onViewElement}
-            className="text-sm font-semibold bg-blue-600 text-white rounded-md px-2 py-1 hover:bg-blue-700"
-          >
-            + Add to Cart
-          </button>
+        <div className="text-center mt-2">
+          <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
+          {subtitle && (
+            <p className="text-sm text-slate-500">{subtitle}</p>
+          )}
+        </div>
+        <div className="flex justify-end mt-2">
           <button onClick={handleViewDetails} aria-label="View">
             <img
               src="https://cdn.builder.io/api/v1/image/assets/dc2319f83b3a42a8a7d7e21e5b5256f0/31b948f52339ca9bf68fafcc54211607cc7beb02?placeholderIfAbsent=true"
